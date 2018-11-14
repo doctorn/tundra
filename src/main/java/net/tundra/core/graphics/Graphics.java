@@ -18,9 +18,9 @@ public class Graphics {
 
   public Graphics(Game game) {
     this.game = game;
-    // glEnable(GL_DEPTH_TEST);
-    // glEnable(GL_CULL_FACE);
-    // glCullFace(GL_BACK);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
   }
 
   public void activate(Program program) {
@@ -28,17 +28,13 @@ public class Graphics {
   }
 
   public void render() throws TundraException {
-    int vertexData = glGenVertexArrays();
-    glBindVertexArray(vertexData);
-
     glClearColor(0f, 0f, 0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
     glUseProgram(active.getProgram());
+
     FloatBuffer vertices = BufferUtils.createFloatBuffer(12);
-    // new Vector3f(0, 0, 0).get(vertices);
-    // new Vector3f(0, 0.5f, 0).get(vertices);
-    // new Vector3f(0.5f, 0.5f, 0f).get(vertices);
-    // new Vector3f(0.5f, 0, 0f).get(vertices);
     vertices
         .put(0)
         .put(0)
@@ -53,16 +49,25 @@ public class Graphics {
         .put(0f)
         .put(0f);
     vertices.flip();
+
+    IntBuffer indices = BufferUtils.createIntBuffer(6);
+    indices.put(3).put(1).put(0).put(3).put(2).put(1).flip();
+
+    int vertexData = glGenVertexArrays();
+    glBindVertexArray(vertexData);
+
     int vertexHandle = glGenBuffers();
+
     glBindBuffer(GL_ARRAY_BUFFER, vertexHandle);
-    glBufferData(GL_ARRAY_BUFFER, vertexHandle, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+
+
     int location = glGetAttribLocation(active.getProgram(), "vertex");
     if (location != -1) {
       glVertexAttribPointer(location, 3, GL_FLOAT, false, 0, 0);
       glEnableVertexAttribArray(location);
     } else throw new TundraException("No location");
-    IntBuffer indices = BufferUtils.createIntBuffer(6);
-    indices.put(0).put(1).put(2).put(1).put(2).put(3).flip();
+
     int indexHandle = glGenBuffers();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexHandle);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);

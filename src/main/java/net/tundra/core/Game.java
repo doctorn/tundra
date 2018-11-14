@@ -16,7 +16,6 @@ public abstract class Game {
     this.height = height;
     this.title = title;
     this.fullscreen = fullscreen;
-    this.graphics = new Graphics(this);
   }
 
   public void start() throws TundraException {
@@ -26,6 +25,7 @@ public abstract class Game {
       Display.setTitle(title);
       Display.setFullscreen(fullscreen);
       Display.create();
+      graphics = new Graphics(this);
       init();
     } catch (LWJGLException e) {
       throw new TundraException("Failed to initialise game window", e);

@@ -14,6 +14,7 @@
 *.tar.gz
 *.rar
 *.dll
+*.png
 
 hs_err_pid*
 

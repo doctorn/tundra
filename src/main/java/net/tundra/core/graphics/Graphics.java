@@ -9,7 +9,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
-import net.tundra.core.resources.Program;
+import net.tundra.core.resources.shaders.Program;
+import net.tundra.core.resources.sprites.Sprite;
 import org.lwjgl.BufferUtils;
 
 public class Graphics {
@@ -36,22 +37,20 @@ public class Graphics {
 
     FloatBuffer vertices = BufferUtils.createFloatBuffer(12);
     vertices
-        .put(0)
-        .put(0)
-        .put(0)
-        .put(0)
-        .put(0.5f)
-        .put(0)
-        .put(0.5f)
-        .put(0.5f)
-        .put(0.5f)
-        .put(0.5f)
-        .put(0f)
-        .put(0f);
+      .put(0).put(0).put(0)
+      .put(0).put(0.5f).put(0)
+      .put(0.5f).put(0.5f).put(0.5f)
+      .put(0.5f).put(0f).put(0f);
     vertices.flip();
 
     IntBuffer indices = BufferUtils.createIntBuffer(6);
     indices.put(3).put(1).put(0).put(3).put(2).put(1).flip();
+
+    FloatBuffer tex_buffer = BufferUtils.createFloatBuffer(8);
+    tex_buffer.put(0).put(1)
+      .put(0).put(0)
+      .put(1).put(0)
+      .put(1).put(1).flip();
 
     int vertexData = glGenVertexArrays();
     glBindVertexArray(vertexData);
@@ -71,6 +70,18 @@ public class Graphics {
     int indexHandle = glGenBuffers();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexHandle);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+
+    Sprite sprite = new Sprite("res/test.png");
+
+    int tex_handle = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, tex_handle);
+    glBufferData(GL_ARRAY_BUFFER, tex_buffer, GL_STATIC_DRAW);
+
+    int tex_loc = glGetAttribLocation(active.getProgram(), "texcoord");
+    if(tex_loc != -1) {
+      glVertexAttribPointer(tex_loc, 2, GL_FLOAT, false, 0, 0);
+      glEnableVertexAttribArray(tex_loc);
+    }
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

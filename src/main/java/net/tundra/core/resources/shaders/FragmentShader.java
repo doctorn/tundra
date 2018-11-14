@@ -1,4 +1,4 @@
-package net.tundra.core.resources;
+package net.tundra.core.resources.shaders;
 
 import static org.lwjgl.opengl.GL20.*;
 

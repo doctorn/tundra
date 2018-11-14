@@ -3,9 +3,9 @@ package net.tundra.examples;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.graphics.Graphics;
-import net.tundra.core.resources.FragmentShader;
-import net.tundra.core.resources.Program;
-import net.tundra.core.resources.VertexShader;
+import net.tundra.core.resources.shaders.FragmentShader;
+import net.tundra.core.resources.shaders.Program;
+import net.tundra.core.resources.shaders.VertexShader;
 
 public class TestGame extends Game {
   private Program program;

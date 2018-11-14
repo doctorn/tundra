@@ -13,11 +13,16 @@
 *.zip
 *.tar.gz
 *.rar
+*.dll
+*.png
 
 hs_err_pid*
 
 target/
 
+core.iml
+
 .classpath
 .project
 .settings/
+.idea/

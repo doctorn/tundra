@@ -33,10 +33,34 @@ public class Graphics {
     this.camera = camera;
   }
 
+  public void drawModelWireframe(Model model, Matrix4f transform) throws TundraException {
+    glPolygonMode(GL_FRONT, GL_LINE);
+    glPolygonMode(GL_BACK, GL_LINE);
+    glDisable(GL_CULL_FACE);
+    drawModel(model, transform);
+    glEnable(GL_CULL_FACE);
+    glPolygonMode(GL_FRONT, GL_FILL);
+    glPolygonMode(GL_BACK, GL_FILL);
+  }
+
+  public void drawModel(Model model, Matrix4f transform) throws TundraException {
+    drawModel(model, null, transform);
+  }
+
   public void drawModel(Model model, Sprite texture, Matrix4f transform) throws TundraException {
     glUseProgram(program.getProgram());
-    program.uniform("mvp_matrix", camera.getViewProjectionMatrix(game).mul(transform));
-    glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+    program.uniform(
+        "mvp_matrix",
+        camera.getViewProjectionMatrix(game.getWidth(), game.getHeight()).mul(transform));
+    if (texture != null) {
+      program.uniform("texturing", true);
+      glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+      program.uniform("tex_start", texture.getStartVector());
+      program.uniform("tex_size", texture.getSizeVector());
+    } else {
+      program.uniform("texturing", false);
+      glBindTexture(GL_TEXTURE_2D, 0);
+    }
     glBindVertexArray(model.getModel());
     glBindBuffer(GL_ARRAY_BUFFER, model.getVertices());
     program.attrib("vertex", 3);

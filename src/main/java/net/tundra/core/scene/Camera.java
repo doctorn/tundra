@@ -1,6 +1,5 @@
 package net.tundra.core.scene;
 
-import net.tundra.core.Game;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -15,10 +14,9 @@ public abstract class Camera {
     fov = 45.0f;
   }
 
-  public Matrix4f getViewProjectionMatrix(Game game) {
+  public Matrix4f getViewProjectionMatrix(int width, int height) {
     return new Matrix4f()
-        .perspective(
-            (float) Math.toRadians(fov), (float) game.getWidth() / game.getHeight(), 0.01f, 100f)
+        .perspective((float) Math.toRadians(fov), (float) width / height, 0.01f, 100f)
         .lookAt(position, target, up);
   }
 

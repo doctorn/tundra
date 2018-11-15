@@ -86,7 +86,7 @@ public class Animation {
     if (playing) {
       currentTime += delta;
       while (currentTime > time) {
-        currentTime = 0;
+        currentTime -= time;
         currentFrame += 1;
         x += 1;
         if ((y == endY && x > endX) || x > sheet.getColumns()) {

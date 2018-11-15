@@ -56,14 +56,14 @@ public class Sprite {
 
   public Vector2f getStartVector() {
     return new Vector2f(
-        (float) coordX * sheet.getSpriteWidth() / (float) sheet.getWidth(),
-        (float) coordY * sheet.getSpriteHeight() / (float) sheet.getHeight());
+        (float) coordX * sheet.getSpriteWidth() / sheet.getWidth(),
+        (float) coordY * sheet.getSpriteHeight() / sheet.getHeight());
   }
 
   public Vector2f getSizeVector() {
     return new Vector2f(
-        (float) sheet.getSpriteWidth() / (float) sheet.getWidth(),
-        (float) sheet.getSpriteHeight() / (float) sheet.getHeight());
+        (float) sheet.getSpriteWidth() / sheet.getWidth(),
+        (float) sheet.getSpriteHeight() / sheet.getHeight());
   }
 
   public Cursor toCursor(int hotX, int hotY) throws TundraException {

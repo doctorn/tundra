@@ -55,6 +55,11 @@ public class Program {
     checkError();
   }
 
+  public void uniform(String name, boolean value) throws TundraException {
+    glUniform1i(getUniformLocation(name), value ? 1 : 0);
+    checkError();
+  }
+
   public void uniform(String name, int value) throws TundraException {
     glUniform1i(getUniformLocation(name), value);
     checkError();

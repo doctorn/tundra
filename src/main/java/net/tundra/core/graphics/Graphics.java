@@ -60,6 +60,7 @@ public class Graphics {
         "mvp_matrix",
         camera.getViewProjectionMatrix(game.getWidth(), game.getHeight()).mul(transform));
     program.uniform("model_matrix", transform);
+    program.uniform("cam_pos", camera.getPosition());
     program.uniform("ambient", new Vector3f(0.2f, 0.2f, 0.2f));
     program.uniform("alpha", 1f);
     for (int i = 0; i < lights.length; i++) {

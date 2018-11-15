@@ -1,10 +1,12 @@
-#version 150
+#version 130
 
 #define NUM_LIGHTS 16
 
 in vec3 frag_normal;
 in vec3 frag_pos;
 in vec2 frag_tex_coord;
+
+uniform vec3 cam_pos;
 
 uniform bool texturing;
 uniform vec2 tex_start;
@@ -58,7 +60,7 @@ void main() {
     vec3 N = normalize(frag_normal);
     vec3 L = normalize(light.pos - frag_pos);
     vec3 R = 2 * dot(L, N) * N - L;
-    vec3 V = normalize(camPos - frag_pos);
+    vec3 V = normalize(cam_pos - frag_pos);
 
     float distance = length(light.pos - frag_pos);
     float attentuation = 1.0 / (light.constant + light.linear * distance +

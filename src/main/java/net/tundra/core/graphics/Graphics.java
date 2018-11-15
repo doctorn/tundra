@@ -62,7 +62,6 @@ public class Graphics {
     program.uniform("model_matrix", transform);
     program.uniform("ambient", new Vector3f(0.2f, 0.2f, 0.2f));
     program.uniform("alpha", 1f);
-    program.uniform("camPos", camera.getPosition());
     for (int i = 0; i < lights.length; i++) {
       program.uniform("lights[" + i + "]", lights[i]);
     }

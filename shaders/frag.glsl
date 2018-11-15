@@ -22,7 +22,6 @@ struct Light {
 uniform Light lights[NUM_LIGHTS];
 uniform vec3 ambient;
 uniform float alpha;
-uniform vec3 camPos;
 
 out vec4 colour;
 

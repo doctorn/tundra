@@ -8,6 +8,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 public abstract class Game {
+  private Input input;
   private int width, height;
   private String title;
   private boolean fullscreen;
@@ -28,6 +29,7 @@ public abstract class Game {
       Display.setFullscreen(fullscreen);
       Display.create();
       graphics = new Graphics(this);
+      input = new Input();
       init();
     } catch (LWJGLException e) {
       throw new TundraException("Failed to initialise game window", e);
@@ -41,6 +43,7 @@ public abstract class Game {
     do {
       int delta = (int) (System.currentTimeMillis() - timestamp);
       timestamp += delta;
+      input.update();
       update(delta);
       graphics.clear();
       render(graphics);
@@ -64,9 +67,13 @@ public abstract class Game {
     return height;
   }
 
+  public Input getInput() {
+    return input;
+  }
+
   public abstract void init() throws TundraException;
 
   public abstract void update(int delta) throws TundraException;
 
-  public abstract void render(Graphics g) throws TundraException;
+  public abstract void render(Graphics graphics) throws TundraException;
 }

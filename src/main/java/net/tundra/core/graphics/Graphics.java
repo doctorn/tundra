@@ -11,9 +11,12 @@ import net.tundra.core.resources.models.Model;
 import net.tundra.core.resources.shaders.Program;
 import net.tundra.core.resources.sprites.Sprite;
 import net.tundra.core.scene.Camera;
+import net.tundra.core.scene.InterfaceCamera;
 import org.joml.Matrix4f;
 
 public class Graphics {
+  private static final Camera INTERFACE_CAMERA = new InterfaceCamera();
+
   private Game game;
   private Program program;
   private Camera camera;

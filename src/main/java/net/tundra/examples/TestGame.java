@@ -44,7 +44,7 @@ public class TestGame extends Game {
 
   @Override
   public void update(int delta) throws TundraException {
-    camera.update(delta);
+    camera.update(this, delta);
     angle += 0.001f * delta;
     android.update(delta);
   }
@@ -53,17 +53,19 @@ public class TestGame extends Game {
   public void render(Graphics g) throws TundraException {
     g.activate(program);
     g.use(camera);
-    Matrix4f transform = new Matrix4f().scale(0.5f).rotate(angle, new Vector3f(0, 1, 0));
-    g.drawModel(model2, android.currentFrame(), transform);
-    g.drawModel(model2, transform);
-    g.drawModelWireframe(model2, transform);
+    // Matrix4f transform = new Matrix4f().scale(0.5f).rotate(angle, new Vector3f(0, 1, 0));
+    // g.drawModel(model2, android.currentFrame(), transform);
+    // g.drawModel(model2, transform);
+    // g.drawModelWireframe(model2, transform);
 
-    // g.drawModel(
-    //     model,
-    //     new Matrix4f()
-    //         .scale(0.1f)
-    //         .rotate(angle + (float) Math.PI, new Vector3f(0, 1, 0))
-    //         .rotate(angle, new Vector3f(1, 0, 0)));
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_P)) camera.togglePerspective();
+
+    g.drawModel(
+        model,
+        new Matrix4f()
+            .scale(0.5f)
+            .rotate(angle + (float) Math.PI, new Vector3f(0, 1, 0))
+            .rotate(angle, new Vector3f(1, 0, 0)));
   }
 
   public static void main(String args[]) throws TundraException {

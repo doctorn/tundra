@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 import java.nio.FloatBuffer;
 import net.tundra.core.TundraException;
+import net.tundra.core.scene.Light;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -92,6 +93,14 @@ public class Program {
     value.get(buffer);
     glUniformMatrix4(getUniformLocation(name), false, buffer);
     checkError();
+  }
+
+  public void uniform(String name, Light value) throws TundraException {
+    uniform(name + ".pos", value.getPosition());
+    uniform(name + ".col", value.getColour());
+    uniform(name + ".constant", value.getConstant());
+    uniform(name + ".linear", value.getLinear());
+    uniform(name + ".quadratic", value.getQuadratic());
   }
 
   public void attrib(String name, int size) throws TundraException {

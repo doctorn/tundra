@@ -15,6 +15,7 @@
 *.rar
 *.dll
 *.png
+*.obj
 
 hs_err_pid*
 

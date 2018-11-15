@@ -12,7 +12,9 @@ import net.tundra.core.resources.shaders.Program;
 import net.tundra.core.resources.sprites.Sprite;
 import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.InterfaceCamera;
+import net.tundra.core.scene.Light;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 public class Graphics {
   private static final Camera INTERFACE_CAMERA = new InterfaceCamera();
@@ -20,6 +22,7 @@ public class Graphics {
   private Game game;
   private Program program;
   private Camera camera;
+  private Light[] lights;
 
   public Graphics(Game game) {
     this.game = game;
@@ -32,8 +35,9 @@ public class Graphics {
     this.program = program;
   }
 
-  public void use(Camera camera) {
+  public void use(Camera camera, Light[] lights) {
     this.camera = camera;
+    this.lights = lights;
   }
 
   public void drawModelWireframe(Model model, Matrix4f transform) throws TundraException {
@@ -55,6 +59,14 @@ public class Graphics {
     program.uniform(
         "mvp_matrix",
         camera.getViewProjectionMatrix(game.getWidth(), game.getHeight()).mul(transform));
+    program.uniform("model_matrix", transform);
+    program.uniform("ambient", new Vector3f(0.2f, 0.2f, 0.2f));
+    program.uniform("alpha", 1f);
+    program.uniform("camPos", camera.getPosition());
+    for (int i = 0; i < lights.length; i++) {
+      program.uniform("lights[" + i + "]", lights[i]);
+    }
+
     if (texture != null) {
       program.uniform("texturing", true);
       glBindTexture(GL_TEXTURE_2D, texture.getTexture());

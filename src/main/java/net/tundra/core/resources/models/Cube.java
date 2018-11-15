@@ -29,6 +29,17 @@ public class Cube extends Model {
 
   private static FloatBuffer normals() {
     FloatBuffer normals = BufferUtils.createFloatBuffer(24);
+    normals.put(
+      new float[] {
+        -1, -1, -1, // 0
+        1, -1, -1, // 1
+        1, 1, -1, // 2
+        -1, 1, -1, // 3
+        -1, -1, 1, // 4
+        1, -1, 1, // 5
+        1, 1, 1, // 6
+        -1, 1, 1 // 7
+      });
     normals.flip();
     return normals;
   }

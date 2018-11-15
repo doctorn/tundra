@@ -30,18 +30,15 @@ out vec4 colour;
 uniform sampler2D tex;
 
 void main() {
-  // Temporarily use normal like this so it isn't optimised away
-
-  vec3 c;
   if (texturing) {
-    c = vec3(texture(tex, tex_start + frag_tex_coord * tex_size));
-    if (texture(tex, tex_start + frag_tex_coord * tex_size).a != 1.0)
-          discard;
+    colour = vec4(texture(tex, tex_start + frag_tex_coord * tex_size));
+    if (colour.a != 1.0)
+      discard;
   } else {
-    c = vec3(1.);
+    colour = vec4(1.);
   }
 
-  vec3 tempColour = ambient;
+  vec3 temp = ambient;
 
   for(int i = 0; i < NUM_LIGHTS; i++) {
     Light light = lights[i];
@@ -55,13 +52,11 @@ void main() {
     float attentuation = 1.0 / (light.constant + light.linear * distance +
                                      light.quadratic * (distance * distance));
 
-    vec3 diff = light.col * max((dot(N, L)), 0.0) * c;
-    vec3 spec = light.col * pow(max(dot(V, R), 0.0), alpha)  * c;
+    vec3 diff = light.col * max((dot(N, L)), 0.0) * vec3(colour);
+    vec3 spec = light.col * pow(max(dot(V, R), 0.0), alpha) * vec3(colour);
 
-    tempColour += attentuation * (diff + spec);
+    temp += attentuation * (diff + spec);
   }
 
-  colour = vec4(tempColour, 0.);
-
-
+  colour = vec4(temp, 0.);
 }

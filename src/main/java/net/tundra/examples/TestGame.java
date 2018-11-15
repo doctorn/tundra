@@ -45,7 +45,7 @@ public class TestGame extends Game {
     lights[0] = new Light(1, 0, 0, 0, 0, 1);
     lights[1] = new Light(-1, 0, 0, 1, 0, 0);
 
-    android = new Animation(new SpriteSheet("res/timothy.png", 24, 24), 0, 3, 5, 3, true, 10);
+    android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();
 
     // model = new Cube(false);
@@ -68,9 +68,9 @@ public class TestGame extends Game {
     Matrix4f transform =
         new Matrix4f().scale(0.5f).translate(new Vector3f((float) Math.sin(angle), 0, -2));
 
-    // g.drawModel(model2, android.currentFrame(), transform, move);
-    g.drawModel(model, transform);
-    // g.drawModelWireframe(model2, transform, move);
+    g.drawModel(model2, android.currentFrame(), transform);
+    // g.drawModel(model2, transform);
+    // g.drawModelWireframe(model2, transform);
   }
 
   public static void main(String args[]) throws TundraException {

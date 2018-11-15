@@ -1,5 +1,7 @@
 package net.tundra.core;
 
+import static org.lwjgl.opengl.GL11.*;
+
 import net.tundra.core.graphics.Graphics;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -40,10 +42,26 @@ public abstract class Game {
       int delta = (int) (System.currentTimeMillis() - timestamp);
       timestamp += delta;
       update(delta);
+      graphics.clear();
       render(graphics);
-      graphics.render();
+      checkError();
       Display.update();
     } while (!Display.isCloseRequested());
+  }
+
+  private void checkError() throws TundraException {
+    int error = glGetError();
+    if (error != GL_NO_ERROR) {
+      throw new TundraException("OpenGL errored with error code " + error);
+    }
+  }
+
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
   }
 
   public abstract void init() throws TundraException;

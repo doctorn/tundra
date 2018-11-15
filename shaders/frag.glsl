@@ -32,22 +32,11 @@ uniform sampler2D tex;
 void main() {
   // Temporarily use normal like this so it isn't optimised away
 
-  if (texturing) {
-    float value = 0;
-    for(int i = 0; i < NUM_LIGHTS; i++) {
-        value *= lights[i].constant;
-    }
-    colour = texture(tex, tex_start + frag_tex_coord * tex_size) *length(frag_normal);
-    if (colour.a != 1.0)
-      discard;
-  } else {
-    colour = vec4(1., 1., 1., 1.); 
-  }
-
-
   vec3 c;
   if (texturing) {
     c = vec3(texture(tex, tex_start + frag_tex_coord * tex_size));
+    if (texture(tex, tex_start + frag_tex_coord * tex_size).a != 1.0)
+          discard;
   } else {
     c = vec3(1.);
   }

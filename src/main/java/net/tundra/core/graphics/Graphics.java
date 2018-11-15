@@ -60,6 +60,10 @@ public class Graphics {
         "mvp_matrix",
         camera.getViewProjectionMatrix(game.getWidth(), game.getHeight()).mul(transform));
     program.uniform("model_matrix", transform);
+    Matrix4f transformInverse = new Matrix4f();
+    transform.invert(transformInverse);
+    transformInverse.transpose();
+    program.uniform("model_matrix_inverse", transformInverse);
     program.uniform("cam_pos", camera.getPosition());
     program.uniform("ambient", new Vector3f(0.2f, 0.2f, 0.2f));
     program.uniform("alpha", 1f);

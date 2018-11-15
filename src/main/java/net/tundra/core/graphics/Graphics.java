@@ -11,12 +11,18 @@ import net.tundra.core.resources.models.Model;
 import net.tundra.core.resources.shaders.Program;
 import net.tundra.core.resources.sprites.Sprite;
 import net.tundra.core.scene.Camera;
+import net.tundra.core.scene.Light;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class Graphics {
   private Game game;
   private Program program;
   private Camera camera;
+  private Light[] lights;
 
   public Graphics(Game game) {
     this.game = game;
@@ -29,29 +35,38 @@ public class Graphics {
     this.program = program;
   }
 
-  public void use(Camera camera) {
+  public void use(Camera camera, Light[] lights) {
     this.camera = camera;
+    this.lights = lights;
   }
 
-  public void drawModelWireframe(Model model, Matrix4f transform) throws TundraException {
+  public void drawModelWireframe(Model model, Matrix4f transform, Matrix4f move) throws TundraException {
     glPolygonMode(GL_FRONT, GL_LINE);
     glPolygonMode(GL_BACK, GL_LINE);
     glDisable(GL_CULL_FACE);
-    drawModel(model, transform);
+    drawModel(model, transform, move);
     glEnable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT, GL_FILL);
     glPolygonMode(GL_BACK, GL_FILL);
   }
 
-  public void drawModel(Model model, Matrix4f transform) throws TundraException {
-    drawModel(model, null, transform);
+  public void drawModel(Model model, Matrix4f transform, Matrix4f move) throws TundraException {
+    drawModel(model, null, transform, move);
   }
 
-  public void drawModel(Model model, Sprite texture, Matrix4f transform) throws TundraException {
+  public void drawModel(Model model, Sprite texture, Matrix4f transform, Matrix4f move) throws TundraException {
     glUseProgram(program.getProgram());
     program.uniform(
         "mvp_matrix",
         camera.getViewProjectionMatrix(game.getWidth(), game.getHeight()).mul(transform));
+    program.uniform("mov_matrix", move);
+    program.uniform("ambient", new Vector3f(0.2f,0.2f,0.2f));
+    program.uniform("alpha", 1f);
+    program.uniform("camPos", camera.getPosition());
+    for(int i = 0; i < lights.length; i++) {
+      program.uniform("lights["+i+"]", lights[i]);
+    }
+
     if (texture != null) {
       program.uniform("texturing", true);
       glBindTexture(GL_TEXTURE_2D, texture.getTexture());

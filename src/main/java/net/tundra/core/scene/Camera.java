@@ -20,5 +20,9 @@ public abstract class Camera {
         .lookAt(position, target, up);
   }
 
+  public Vector3f getPosition() {
+    return position;
+  }
+
   public abstract void update(int delta);
 }

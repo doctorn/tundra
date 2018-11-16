@@ -8,7 +8,9 @@ import static org.lwjgl.opengl.GL30.*;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.resources.models.Model;
+import net.tundra.core.resources.shaders.FragmentShader;
 import net.tundra.core.resources.shaders.Program;
+import net.tundra.core.resources.shaders.VertexShader;
 import net.tundra.core.resources.sprites.Sprite;
 import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.InterfaceCamera;
@@ -23,15 +25,17 @@ public class Graphics {
   private Program program;
   private Camera camera;
 
-  public Graphics(Game game) {
+  public Graphics(Game game) throws TundraException {
     this.game = game;
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-  }
 
-  public void activate(Program program) {
-    this.program = program;
+    VertexShader vertex = new VertexShader("shaders/vert.glsl");
+    FragmentShader fragment = new FragmentShader("shaders/frag.glsl");
+    program = new Program(vertex, fragment);
+    vertex.delete();
+    fragment.delete();
   }
 
   public void use(Camera camera) {
@@ -63,7 +67,7 @@ public class Graphics {
     transformInverse.transpose();
     program.uniform("model_matrix_inverse", transformInverse);
     program.uniform("cam_pos", camera.getPosition());
-    program.uniform("ambient", new Vector3f(0.2f, 0.2f, 0.2f));
+    program.uniform("ambient", new Vector3f(0.05f, 0.05f, 0.05f));
     program.uniform("alpha", 1f);
     for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)
       program.uniform("lights[" + i + "]", game.getLights().get(i));

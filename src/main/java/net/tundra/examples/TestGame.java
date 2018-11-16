@@ -5,9 +5,6 @@ import net.tundra.core.TundraException;
 import net.tundra.core.graphics.Graphics;
 import net.tundra.core.resources.models.Model;
 import net.tundra.core.resources.models.Plane;
-import net.tundra.core.resources.shaders.FragmentShader;
-import net.tundra.core.resources.shaders.Program;
-import net.tundra.core.resources.shaders.VertexShader;
 import net.tundra.core.resources.sprites.Animation;
 import net.tundra.core.resources.sprites.SpriteSheet;
 import net.tundra.core.scene.Camera;
@@ -16,7 +13,6 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class TestGame extends Game {
-  private Program program;
   private Model model, model2;
   private Animation android;
   private Camera camera;
@@ -29,11 +25,6 @@ public class TestGame extends Game {
   @Override
   public void init() throws TundraException {
     camera = new TestCamera();
-    VertexShader vertex = new VertexShader("shaders/vert.glsl");
-    FragmentShader fragment = new FragmentShader("shaders/frag.glsl");
-    program = new Program(vertex, fragment);
-    vertex.delete();
-    fragment.delete();
 
     addLight(new FixedLight(1, 0, 0, 0, 0, 1));
     addLight(new FixedLight(-1, 0, 0, 1, 0, 0));
@@ -53,8 +44,6 @@ public class TestGame extends Game {
 
   @Override
   public void render(Graphics g) throws TundraException {
-    g.activate(program);
-
     g.use(camera);
     Matrix4f transform =
         new Matrix4f().scale(0.5f).translate(new Vector3f((float) Math.sin(angle), 0, -2));

@@ -1,6 +1,10 @@
 package net.tundra.core.scene;
 
 import net.tundra.core.Game;
+import net.tundra.core.TundraException;
+import net.tundra.core.graphics.Graphics;
+import net.tundra.core.resources.models.Cube;
+import net.tundra.core.resources.models.Model;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -8,6 +12,8 @@ public abstract class Camera {
   private float fov;
   private boolean perspective;
   private Vector3f position, target, up;
+
+  private Model debug = new Cube(false);
 
   public Camera() {
     position = new Vector3f(0, 0, 2);
@@ -75,6 +81,10 @@ public abstract class Camera {
 
   public float getFOV() {
     return fov;
+  }
+
+  public void renderDebug(Game game, Graphics graphics) throws TundraException {
+    graphics.drawModelWireframe(debug, new Matrix4f().translate(position).scale(0.2f));
   }
 
   public abstract void update(Game game, int delta);

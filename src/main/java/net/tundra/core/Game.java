@@ -15,7 +15,7 @@ public abstract class Game {
   private Input input;
   private int width, height;
   private String title;
-  private boolean fullscreen;
+  private boolean fullscreen, debug = false, lighting = true;
   private Graphics graphics;
   private List<Light> lights = new ArrayList<>();
   private List<Camera> cameras = new ArrayList<>();
@@ -55,6 +55,10 @@ public abstract class Game {
       update(delta);
       graphics.clear();
       render(graphics);
+      if (debug) {
+        for (Light light : lights) light.renderDebug(this, graphics);
+        for (Camera camera : cameras) camera.renderDebug(this, graphics);
+      }
       checkError();
       Display.update();
     } while (!Display.isCloseRequested());
@@ -97,6 +101,22 @@ public abstract class Game {
 
   public void removeCamera(Camera camera) {
     cameras.remove(camera);
+  }
+
+  public void toggleDebug() {
+    debug = !debug;
+  }
+
+  public void toggleLighting() {
+    lighting = !lighting;
+  }
+
+  public boolean lightingEnabled() {
+    return lighting;
+  }
+
+  public void setLighting(boolean lighting) {
+    this.lighting = lighting;
   }
 
   public abstract void init() throws TundraException;

@@ -46,7 +46,10 @@ public class Graphics {
     glPolygonMode(GL_FRONT, GL_LINE);
     glPolygonMode(GL_BACK, GL_LINE);
     glDisable(GL_CULL_FACE);
+    boolean temp = game.lightingEnabled();
+    game.setLighting(false);
     drawModel(model, transform);
+    game.setLighting(temp);
     glEnable(GL_CULL_FACE);
     glPolygonMode(GL_FRONT, GL_FILL);
     glPolygonMode(GL_BACK, GL_FILL);
@@ -69,9 +72,12 @@ public class Graphics {
     program.uniform("cam_pos", camera.getPosition());
     program.uniform("ambient", new Vector3f(0.05f, 0.05f, 0.05f));
     program.uniform("alpha", 1f);
-    for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)
-      program.uniform("lights[" + i + "]", game.getLights().get(i));
-    program.uniform("light_count", game.getLights().size());
+    program.uniform("lighting", game.lightingEnabled());
+    if (game.lightingEnabled()) {
+      for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)
+        program.uniform("lights[" + i + "]", game.getLights().get(i));
+      program.uniform("light_count", game.getLights().size());
+    }
 
     if (texture != null) {
       program.uniform("texturing", true);

@@ -16,8 +16,10 @@ import org.joml.Vector3f;
 public class TestGame extends Game {
   private Model model, model2;
   private Animation android;
-  private Camera camera;
+  private Camera camera, camera2, active;
   private float angle;
+  private FixedLight flash;
+  private boolean flashOn;
 
   public TestGame() {
     super(800, 600, "tundra", false);
@@ -26,11 +28,15 @@ public class TestGame extends Game {
   @Override
   public void init() throws TundraException {
     camera = new OrbitalCamera(new Vector3f(0, 0, -1), 10f);
+    camera2 = new TestCamera();
     addCamera(camera);
+    addCamera(camera2);
+    active = camera2;
 
     addLight(new FixedLight(1, 0, 0, 0, 0, 1));
     addLight(new FixedLight(-1, 0, 0, 1, 0, 0));
     addLight(new FixedLight(0, 10, -4, 1, 1, 1));
+    flash = new FixedLight(new Vector3f(0, 1, -2), new Vector3f(1, 1, 0), 0, 0, 1);
 
     android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();
@@ -43,14 +49,32 @@ public class TestGame extends Game {
   public void update(int delta) throws TundraException {
     angle += 0.001f * delta;
     android.update(delta);
+    if (angle > 1f && flashOn) {
+      removeLight(flash);
+      angle = 0;
+      flashOn = !flashOn;
+    } else if (angle > 1f && !flashOn) {
+      addLight(flash);
+      angle = 0;
+      flashOn = !flashOn;
+    }
+
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_C)) {
+      if (active == camera) active = camera2;
+      else active = camera;
+    }
+
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_D)) toggleDebug();
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_L)) toggleLighting();
   }
 
   @Override
   public void render(Graphics g) throws TundraException {
-    g.use(camera);
-    Matrix4f transform = new Matrix4f().scale(0.5f).translate(new Vector3f(0, 0, -2));
-
-    g.drawModel(model2, android.currentFrame(), transform);
+    g.use(active);
+    for (int i = -5; i < 5; i++) {
+      Matrix4f transform = new Matrix4f().translate(new Vector3f(i, 0, -2)).scale(0.5f);
+      g.drawModel(model2, android.currentFrame(), transform);
+    }
     g.drawModel(
         model2,
         new Matrix4f()

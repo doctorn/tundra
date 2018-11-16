@@ -21,6 +21,7 @@ struct Light {
     float quadratic;
 };
 
+uniform bool lighting;
 uniform Light lights[MAX_LIGHTS];
 uniform int light_count;
 uniform vec3 ambient;
@@ -39,24 +40,26 @@ void main() {
     colour = vec4(1.);
   }
 
-  vec3 temp = ambient;
-  for(int i = 0; i < light_count; i++) {
-    Light light = lights[i];
+  if (lighting) {
+    vec3 temp = ambient;
+    for(int i = 0; i < light_count; i++) {
+      Light light = lights[i];
 
-    vec3 N = normalize(frag_normal);
-    vec3 L = normalize(light.pos - frag_pos);
-    vec3 R = 2 * dot(L, N) * N - L;
-    vec3 V = normalize(cam_pos - frag_pos);
+      vec3 N = normalize(frag_normal);
+      vec3 L = normalize(light.pos - frag_pos);
+      vec3 R = 2 * dot(L, N) * N - L;
+      vec3 V = normalize(cam_pos - frag_pos);
 
-    float distance = length(light.pos - frag_pos);
-    float attentuation = 1.0 / (light.constant + light.linear * distance +
-                                     light.quadratic * (distance * distance));
+      float distance = length(light.pos - frag_pos);
+      float attentuation = 1.0 / (light.constant + light.linear * distance +
+                                       light.quadratic * (distance * distance));
 
-    vec3 diff = light.col * max((dot(N, L)), 0.0) * vec3(colour);
-    vec3 spec = light.col * pow(max(dot(V, R), 0.0), alpha) * vec3(colour);
+      vec3 diff = light.col * max((dot(N, L)), 0.0) * vec3(colour);
+      vec3 spec = light.col * pow(max(dot(V, R), 0.0), alpha) * vec3(colour);
 
-    temp += attentuation * (diff + spec);
+      temp += attentuation * (diff + spec);
+    }
+
+    colour = vec4(temp, 0.);
   }
-
-  colour = vec4(temp, 0.);
 }

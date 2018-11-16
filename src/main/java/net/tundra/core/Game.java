@@ -20,6 +20,8 @@ public abstract class Game {
   private List<Light> lights = new ArrayList<>();
   private List<Camera> cameras = new ArrayList<>();
 
+  private int fps = 0, frameCount = 0, cumulativeDelta = 0;
+
   public Game(int width, int height, String title, boolean fullscreen) {
     this.width = width;
     this.height = height;
@@ -49,6 +51,13 @@ public abstract class Game {
     do {
       int delta = (int) (System.currentTimeMillis() - timestamp);
       timestamp += delta;
+      frameCount++;
+      cumulativeDelta += delta;
+      if (frameCount == 10) {
+        frameCount = 0;
+        fps = 10000 / cumulativeDelta;
+        cumulativeDelta = 0;
+      }
       input.update();
       for (Light light : lights) light.update(this, delta);
       for (Camera camera : cameras) camera.update(this, delta);
@@ -77,6 +86,10 @@ public abstract class Game {
 
   public int getHeight() {
     return height;
+  }
+
+  public int getFPS() {
+    return fps;
   }
 
   public Input getInput() {

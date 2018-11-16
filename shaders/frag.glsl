@@ -46,9 +46,9 @@ void main() {
       Light light = lights[i];
 
       vec3 N = normalize(frag_normal);
-      vec3 L = normalize(light.pos - frag_pos);
+      vec3 L = normalize(frag_pos - light.pos);
       vec3 R = 2 * dot(L, N) * N - L;
-      vec3 V = normalize(cam_pos - frag_pos);
+      vec3 V = normalize(frag_pos - cam_pos);
 
       float distance = length(light.pos - frag_pos);
       float attentuation = 1.0 / (light.constant + light.linear * distance +
@@ -60,6 +60,6 @@ void main() {
       temp += attentuation * (diff + spec);
     }
 
-    colour = vec4(temp, 0.);
+    colour = vec4(temp, 1.);
   }
 }

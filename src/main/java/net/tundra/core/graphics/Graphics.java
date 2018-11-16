@@ -11,6 +11,7 @@ import net.tundra.core.resources.models.Model;
 import net.tundra.core.resources.shaders.FragmentShader;
 import net.tundra.core.resources.shaders.Program;
 import net.tundra.core.resources.shaders.VertexShader;
+import net.tundra.core.resources.sprites.Font;
 import net.tundra.core.resources.sprites.Sprite;
 import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.InterfaceCamera;
@@ -100,6 +101,29 @@ public class Graphics {
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindVertexArray(0);
     glUseProgram(0);
+  }
+
+  public void drawString(String string, Font font, int x, int y) throws TundraException {
+    for (int i = 0; i < string.length(); i++)
+      drawImage(font.getCharacter(string.charAt(i)), x + font.getCharacterWidth() * i, y);
+  }
+
+  public void drawImage(Sprite sprite, int x, int y) throws TundraException {
+    boolean temp = game.lightingEnabled();
+    game.setLighting(false);
+    glDisable(GL_DEPTH_TEST);
+    Camera previous = camera;
+    camera = INTERFACE_CAMERA;
+    drawModel(
+        Model.PLANE,
+        sprite,
+        new Matrix4f()
+            .translate(x, game.getHeight() - y, 0)
+            .scale(sprite.getWidth() / 2f, sprite.getHeight() / 2f, 1)
+            .translate(1, -1, 0));
+    camera = previous;
+    game.setLighting(temp);
+    glEnable(GL_DEPTH_TEST);
   }
 
   public void clear() {

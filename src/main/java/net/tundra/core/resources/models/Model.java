@@ -7,6 +7,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 public class Model {
+  public static final Model CUBE = new Cube(false);
+  public static final Model PLANE = new Plane();
   private int vertexArray, vertexHandle, normalHandle, textureHandle, indexHandle, indexCount;
 
   public Model(FloatBuffer vertices, FloatBuffer normals, FloatBuffer textures, IntBuffer indices) {

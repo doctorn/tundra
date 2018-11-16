@@ -1,9 +1,9 @@
 package net.tundra.core.scene;
 
+import net.tundra.core.Game;
 import org.joml.Vector3f;
 
-public class Light {
-
+public abstract class Light {
   private Vector3f position = new Vector3f(0, 0, 0);
   private Vector3f colour = new Vector3f(0, 0, 0);
 
@@ -22,13 +22,13 @@ public class Light {
     quadratic = 0.0075f;
   }
 
-  public Light(Vector3f pos, Vector3f col, float con, float lin, float quad) {
-    position = pos;
-    colour = col;
+  public Light(Vector3f position, Vector3f colour, float constant, float linear, float quadratic) {
+    this.position = position;
+    this.colour = colour;
 
-    constant = con;
-    linear = lin;
-    quadratic = quad;
+    this.constant = constant;
+    this.linear = linear;
+    this.quadratic = quadratic;
   }
 
   public Vector3f getColour() {
@@ -70,4 +70,6 @@ public class Light {
   public void setQuadratic(float quadratic) {
     this.quadratic = quadratic;
   }
+
+  public abstract void update(Game game, int delta);
 }

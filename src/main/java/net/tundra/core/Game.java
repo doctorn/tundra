@@ -2,7 +2,11 @@ package net.tundra.core;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.tundra.core.graphics.Graphics;
+import net.tundra.core.scene.Camera;
+import net.tundra.core.scene.Light;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -13,6 +17,8 @@ public abstract class Game {
   private String title;
   private boolean fullscreen;
   private Graphics graphics;
+  private List<Light> lights = new ArrayList<>();
+  private List<Camera> cameras = new ArrayList<>();
 
   public Game(int width, int height, String title, boolean fullscreen) {
     this.width = width;
@@ -44,6 +50,8 @@ public abstract class Game {
       int delta = (int) (System.currentTimeMillis() - timestamp);
       timestamp += delta;
       input.update();
+      for (Light light : lights) light.update(this, delta);
+      for (Camera camera : cameras) camera.update(this, delta);
       update(delta);
       graphics.clear();
       render(graphics);
@@ -69,6 +77,26 @@ public abstract class Game {
 
   public Input getInput() {
     return input;
+  }
+
+  public List<Light> getLights() {
+    return lights;
+  }
+
+  public void addLight(Light light) {
+    lights.add(light);
+  }
+
+  public void removeLight(Light light) {
+    lights.remove(light);
+  }
+
+  public void addCamera(Camera camera) {
+    cameras.add(camera);
+  }
+
+  public void removeCamera(Camera camera) {
+    cameras.remove(camera);
   }
 
   public abstract void init() throws TundraException;

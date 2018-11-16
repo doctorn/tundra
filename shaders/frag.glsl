@@ -1,6 +1,6 @@
 #version 130
 
-#define NUM_LIGHTS 16
+#define MAX_LIGHTS 128
 
 in vec3 frag_normal;
 in vec3 frag_pos;
@@ -21,7 +21,8 @@ struct Light {
     float quadratic;
 };
 
-uniform Light lights[NUM_LIGHTS];
+uniform Light lights[MAX_LIGHTS];
+uniform int light_count;
 uniform vec3 ambient;
 uniform float alpha;
 
@@ -40,7 +41,7 @@ void main() {
 
   vec3 temp = ambient;
 
-  for(int i = 0; i < NUM_LIGHTS; i++) {
+  for(int i = 0; i < light_count; i++) {
     Light light = lights[i];
 
     vec3 N = normalize(frag_normal);

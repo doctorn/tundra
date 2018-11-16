@@ -12,17 +12,16 @@ import net.tundra.core.resources.shaders.Program;
 import net.tundra.core.resources.sprites.Sprite;
 import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.InterfaceCamera;
-import net.tundra.core.scene.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class Graphics {
   private static final Camera INTERFACE_CAMERA = new InterfaceCamera();
+  private static final int MAX_LIGHTS = 128;
 
   private Game game;
   private Program program;
   private Camera camera;
-  private Light[] lights;
 
   public Graphics(Game game) {
     this.game = game;
@@ -35,9 +34,8 @@ public class Graphics {
     this.program = program;
   }
 
-  public void use(Camera camera, Light[] lights) {
+  public void use(Camera camera) {
     this.camera = camera;
-    this.lights = lights;
   }
 
   public void drawModelWireframe(Model model, Matrix4f transform) throws TundraException {
@@ -67,9 +65,9 @@ public class Graphics {
     program.uniform("cam_pos", camera.getPosition());
     program.uniform("ambient", new Vector3f(0.2f, 0.2f, 0.2f));
     program.uniform("alpha", 1f);
-    for (int i = 0; i < lights.length; i++) {
-      program.uniform("lights[" + i + "]", lights[i]);
-    }
+    for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)
+      program.uniform("lights[" + i + "]", game.getLights().get(i));
+    program.uniform("light_count", game.getLights().size());
 
     if (texture != null) {
       program.uniform("texturing", true);

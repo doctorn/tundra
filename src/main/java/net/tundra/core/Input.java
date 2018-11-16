@@ -5,7 +5,8 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 public class Input {
-  private int keys, mouseButtons;
+  private static final int KEYS = 256;
+  private int mouseButtons;
 
   private boolean[] currentKeys;
   private boolean[] previousKeys;
@@ -15,9 +16,9 @@ public class Input {
 
   public Input() {
     Keyboard.enableRepeatEvents(true);
-    keys = Keyboard.getKeyCount();
-    currentKeys = new boolean[keys];
-    previousKeys = new boolean[keys];
+
+    currentKeys = new boolean[KEYS];
+    previousKeys = new boolean[KEYS];
 
     mouseButtons = Mouse.getButtonCount();
     mouseEvents = new boolean[mouseButtons];
@@ -33,8 +34,8 @@ public class Input {
     currentMouseY = getMouseY();
 
     Keyboard.poll();
-    currentKeys = new boolean[keys];
-    previousKeys = new boolean[keys];
+    currentKeys = new boolean[KEYS];
+    previousKeys = new boolean[KEYS];
 
     while (Keyboard.next()) {
       if (Keyboard.getEventKeyState()) {

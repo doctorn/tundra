@@ -1,0 +1,9 @@
+- [ ] Framebuffers (N)
+- [ ] Re-structure rendering pipeline (N)
+- [ ] Shadow mapping (T)
+- [ ] Audio (T)
+- [ ] GameObject management (N)
+- [ ] GameState system (N)
+- [ ] Particle system (N)
+- [ ] .obj loading (T)
+- [ ] JBox integration

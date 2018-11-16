@@ -81,9 +81,8 @@ public class TestGame extends Game {
             .translate(0, -0.5f, -2f)
             .scale(20f)
             .rotate(-(float) Math.PI / 2f, new Vector3f(1, 0, 0)));
-    // g.drawModel(model2, transform);
-    // g.drawModelWireframe(model2, transform);
     g.drawString(getFPS() + " FPS", font, 10, 10);
+    g.drawString(getLights().size() + " LIGHTS", font, 10, 35);
   }
 
   public static void main(String args[]) throws TundraException {

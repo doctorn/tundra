@@ -66,6 +66,14 @@ public class Sprite {
         (float) sheet.getSpriteHeight() / sheet.getHeight());
   }
 
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
+  }
+
   public Cursor toCursor(int hotX, int hotY) throws TundraException {
     try {
       hotY = height - hotY - 1;

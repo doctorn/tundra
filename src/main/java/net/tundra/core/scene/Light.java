@@ -3,7 +3,6 @@ package net.tundra.core.scene;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.graphics.Graphics;
-import net.tundra.core.resources.models.Cube;
 import net.tundra.core.resources.models.Model;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -15,8 +14,6 @@ public abstract class Light {
   private float constant = 1f;
   private float linear = 1f;
   private float quadratic = 1f;
-
-  private Model debug = new Cube(false);
 
   public Light() {}
 
@@ -81,6 +78,6 @@ public abstract class Light {
   public abstract void update(Game game, int delta);
 
   public void renderDebug(Game game, Graphics graphics) throws TundraException {
-    graphics.drawModelWireframe(debug, new Matrix4f().translate(position).scale(0.2f));
+    graphics.drawModelWireframe(Model.CUBE, new Matrix4f().translate(position).scale(0.2f));
   }
 }

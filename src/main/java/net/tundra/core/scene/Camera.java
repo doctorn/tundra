@@ -22,6 +22,7 @@ public abstract class Camera {
     this.target = target;
     this.up = up;
     this.fov = fov;
+    perspective = true;
   }
 
   public Matrix4f getViewProjectionMatrix(int width, int height) {

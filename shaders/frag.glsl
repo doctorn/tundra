@@ -40,7 +40,6 @@ void main() {
   }
 
   vec3 temp = ambient;
-
   for(int i = 0; i < light_count; i++) {
     Light light = lights[i];
 

@@ -21,6 +21,9 @@ public class Input {
 
     mouseButtons = Mouse.getButtonCount();
     mouseEvents = new boolean[mouseButtons];
+
+    previousMouseX = getMouseX();
+    previousMouseY = getMouseY();
   }
 
   public void update() {

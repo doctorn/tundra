@@ -63,6 +63,7 @@ void main() {
       }
     }
 
-    colour = vec4(temp, 1.);
+    float gamma = 2.2;
+    colour = vec4(pow(temp, vec3(1. / gamma)), 1.);
   }
 }

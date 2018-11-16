@@ -7,7 +7,7 @@ import net.tundra.core.resources.models.Model;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public abstract class Camera {
+public abstract class Camera extends SceneComponent {
   private float fov;
   private boolean perspective;
   private Vector3f position, target, up;

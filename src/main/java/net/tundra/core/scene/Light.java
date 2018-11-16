@@ -7,13 +7,15 @@ import net.tundra.core.resources.models.Model;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public abstract class Light {
+public abstract class Light extends SceneComponent {
   private Vector3f position = new Vector3f(0, 0, 0);
   private Vector3f colour = new Vector3f(0, 0, 0);
 
   private float constant = 1f;
   private float linear = 1f;
   private float quadratic = 1f;
+
+  private boolean active = true;
 
   public Light() {}
 
@@ -79,5 +81,13 @@ public abstract class Light {
 
   public void renderDebug(Game game, Graphics graphics) throws TundraException {
     graphics.drawModelWireframe(Model.CUBE, new Matrix4f().translate(position).scale(0.2f));
+  }
+
+  public void toggle() {
+    active = !active;
+  }
+
+  public boolean active() {
+    return active;
   }
 }

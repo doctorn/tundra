@@ -3,10 +3,13 @@ package net.tundra.core;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import net.tundra.core.graphics.Graphics;
 import net.tundra.core.scene.Camera;
+import net.tundra.core.scene.GameObject;
 import net.tundra.core.scene.Light;
+import net.tundra.core.scene.SceneComponent;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -19,6 +22,7 @@ public abstract class Game {
   private Graphics graphics;
   private List<Light> lights = new ArrayList<>();
   private List<Camera> cameras = new ArrayList<>();
+  private List<GameObject> objects = new ArrayList<>();
 
   private int fps = 0, frameCount = 0, cumulativeDelta = 0;
 
@@ -59,10 +63,19 @@ public abstract class Game {
         cumulativeDelta = 0;
       }
       input.update();
+
+      for (GameObject object : objects) object.update(this, delta);
       for (Light light : lights) light.update(this, delta);
       for (Camera camera : cameras) camera.update(this, delta);
+
       update(delta);
+
+      cleanup(objects);
+      cleanup(lights);
+      cleanup(cameras);
+
       graphics.clear();
+      for (GameObject object : objects) object.render(this, graphics);
       render(graphics);
       if (debug) {
         for (Light light : lights) light.renderDebug(this, graphics);
@@ -104,16 +117,12 @@ public abstract class Game {
     lights.add(light);
   }
 
-  public void removeLight(Light light) {
-    lights.remove(light);
-  }
-
   public void addCamera(Camera camera) {
     cameras.add(camera);
   }
 
-  public void removeCamera(Camera camera) {
-    cameras.remove(camera);
+  public void addObject(GameObject object) {
+    objects.add(object);
   }
 
   public void toggleDebug() {
@@ -130,6 +139,13 @@ public abstract class Game {
 
   public void setLighting(boolean lighting) {
     this.lighting = lighting;
+  }
+
+  private void cleanup(List<? extends SceneComponent> components) {
+    Iterator<? extends SceneComponent> it = components.iterator();
+    while (it.hasNext()) {
+      if (it.next().dying()) it.remove();
+    }
   }
 
   public abstract void init() throws TundraException;

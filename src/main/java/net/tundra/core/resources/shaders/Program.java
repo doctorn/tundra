@@ -101,6 +101,8 @@ public class Program {
     uniform(name + ".constant", value.getConstant());
     uniform(name + ".linear", value.getLinear());
     uniform(name + ".quadratic", value.getQuadratic());
+    uniform(name + ".quadratic", value.getQuadratic());
+    uniform(name + ".on", value.active());
   }
 
   public void attrib(String name, int size) throws TundraException {

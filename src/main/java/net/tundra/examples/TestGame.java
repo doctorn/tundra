@@ -16,13 +16,9 @@ import org.joml.Vector3f;
 public class TestGame extends Game {
   private Animation android;
   private Camera camera, camera2, active;
-  private float angle;
-  private FixedLight flash;
-  private boolean flashOn;
   private Font font;
 
   public TestGame() {
-    // super(800, 600, "tundra", false);
     super(1920, 1080, "tundra", true);
   }
 
@@ -34,10 +30,9 @@ public class TestGame extends Game {
     addCamera(camera2);
     active = camera2;
 
-    addLight(new FixedLight(1, 0, 0, 0, 0, 1));
-    addLight(new FixedLight(-1, 0, 0, 1, 0, 0));
-    addLight(new FixedLight(0, 10, -4, 1, 1, 1));
-    flash = new FixedLight(new Vector3f(0, 1, -2), new Vector3f(1, 1, 0), 0, 0, 1);
+    addLight(new FixedLight(1, 3f, 0, 0, 0, 1));
+    addLight(new FixedLight(-1, 3f, 0, 1, 0, 0));
+    // addLight(new FixedLight(0, 10, -4, 1, 1, 1));
     android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();
 
@@ -47,17 +42,7 @@ public class TestGame extends Game {
 
   @Override
   public void update(int delta) throws TundraException {
-    angle += 0.001f * delta;
     android.update(delta);
-    if (angle > 1f && flashOn) {
-      removeLight(flash);
-      angle = 0;
-      flashOn = !flashOn;
-    } else if (angle > 1f && !flashOn) {
-      addLight(flash);
-      angle = 0;
-      flashOn = !flashOn;
-    }
 
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_C)) {
       if (active == camera) active = camera2;
@@ -72,15 +57,34 @@ public class TestGame extends Game {
   public void render(Graphics g) throws TundraException {
     g.use(active);
     for (int i = -5; i < 5; i++) {
-      Matrix4f transform = new Matrix4f().translate(new Vector3f(i, 0, -2)).scale(0.5f);
+      Matrix4f transform = new Matrix4f().translate(new Vector3f(i, -3.5f, -2)).scale(0.5f);
       g.drawModel(Model.PLANE, android.currentFrame(), transform);
     }
+
     g.drawModel(
         Model.PLANE,
         new Matrix4f()
-            .translate(0, -0.5f, -2f)
+            .translate(0, -4f, 0f)
             .scale(20f)
             .rotate(-(float) Math.PI / 2f, new Vector3f(1, 0, 0)));
+
+    g.drawModel(
+        Model.PLANE,
+        new Matrix4f()
+            .translate(0, 4f, 0f)
+            .scale(20f)
+            .rotate(-(float) Math.PI * 3f / 2f, new Vector3f(1, 0, 0)));
+
+    for (int i = 0; i < 4; i++) {
+      g.drawModel(
+          Model.PLANE,
+          new Matrix4f()
+              .rotate((float) Math.PI * i / 2f, new Vector3f(0, 1, 0))
+              .translate(0, 0f, 20f)
+              .scale(20f, 4f, 1f)
+              .rotate(-(float) Math.PI, new Vector3f(1, 0, 0)));
+    }
+
     g.drawString(getFPS() + " FPS", font, 10, 10);
     g.drawString(getLights().size() + " LIGHTS", font, 10, 35);
   }

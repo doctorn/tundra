@@ -16,5 +16,6 @@ void main() {
   gl_Position = mvp_matrix * vec4(vertex, 1.0);
   frag_tex_coord = tex_coord;
   frag_normal = mat3(model_matrix_inverse) * normal;
-  frag_pos = vec3(model_matrix * vec4(vertex, 1.0));
+  vec4 frag_pos_hom = model_matrix * vec4(vertex, 1.0);
+  frag_pos = vec3(frag_pos_hom) / frag_pos_hom.w;
 }

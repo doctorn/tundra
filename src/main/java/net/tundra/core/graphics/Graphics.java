@@ -72,7 +72,7 @@ public class Graphics {
     program.uniform("model_matrix_inverse", transformInverse);
     program.uniform("cam_pos", camera.getPosition());
     program.uniform("ambient", new Vector3f(0.05f, 0.05f, 0.05f));
-    program.uniform("alpha", 100f);
+    program.uniform("alpha", 1f);
     program.uniform("lighting", game.lightingEnabled());
     if (game.lightingEnabled()) {
       for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)

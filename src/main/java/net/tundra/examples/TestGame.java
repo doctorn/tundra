@@ -25,19 +25,20 @@ public class TestGame extends Game {
   @Override
   public void init() throws TundraException {
     camera = new OrbitalCamera(new Vector3f(0, 0, -1), 10f);
-    camera2 = new TestCamera();
+    camera2 = new FPSCamera(new Vector3f(0, -3f, 0));
     addCamera(camera);
     addCamera(camera2);
     active = camera2;
 
-    addLight(new FixedLight(1, 3f, 0, 0, 0, 1));
-    addLight(new FixedLight(-1, 3f, 0, 1, 0, 0));
-    // addLight(new FixedLight(0, 10, -4, 1, 1, 1));
+    addLight(new FixedLight(4, 0, 0, 0, 0, 1));
+    addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
+    addLight(new FixedLight(0, 3, 0, 1, 1, 1));
     android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();
 
     SpriteSheet fontSheet = new SpriteSheet("res/font.png", 20, 22);
     font = new Font(fontSheet);
+    getInput().setMouseGrabbed(true);
   }
 
   @Override
@@ -49,8 +50,13 @@ public class TestGame extends Game {
       else active = camera;
     }
 
-    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_D)) toggleDebug();
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_T)) toggleDebug();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_L)) toggleLighting();
+
+    if (getInput().isMouseButtonPressed(0))
+      addObject(
+          new Bullet(
+              this, camera2.getPosition().add(camera2.getLook().mul(0.5f)), camera2.getLook()));
   }
 
   @Override

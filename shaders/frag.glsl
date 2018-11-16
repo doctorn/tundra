@@ -49,15 +49,15 @@ void main() {
       if (light.on) {
         vec3 N = normalize(frag_normal);
         vec3 L = normalize(frag_pos - light.pos);
-        vec3 R = 2 * dot(L, N) * N - L;
         vec3 V = normalize(frag_pos - cam_pos);
+        vec3 H = normalize(L + V);
 
         float distance = length(frag_pos - light.pos);
         float attentuation = 1.0 / (light.constant + light.linear * distance +
                                          light.quadratic * (distance * distance));
 
         vec3 diff = light.col * max((dot(N, L)), 0.0) * vec3(colour);
-        vec3 spec = light.col * pow(max(dot(V, R), 0.0), alpha) * vec3(colour);
+        vec3 spec = light.col * pow(max(dot(N, H), 0.0), alpha) * vec3(colour);
 
         temp += attentuation * (diff + spec);
       }

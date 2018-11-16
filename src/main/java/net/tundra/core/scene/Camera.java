@@ -7,7 +7,7 @@ import net.tundra.core.resources.models.Model;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public abstract class Camera extends SceneComponent {
+public abstract class Camera extends SceneComponent implements Trackable {
   private float fov;
   private boolean perspective;
   private Vector3f position, target, up;
@@ -60,6 +60,7 @@ public abstract class Camera extends SceneComponent {
     this.up = up;
   }
 
+  @Override
   public Vector3f getPosition() {
     return new Vector3f(position);
   }
@@ -78,6 +79,10 @@ public abstract class Camera extends SceneComponent {
 
   public float getFOV() {
     return fov;
+  }
+
+  public Vector3f getLook() {
+    return getTarget().sub(position).normalize();
   }
 
   public void renderDebug(Game game, Graphics graphics) throws TundraException {

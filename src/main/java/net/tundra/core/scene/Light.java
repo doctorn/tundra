@@ -7,7 +7,7 @@ import net.tundra.core.resources.models.Model;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-public abstract class Light extends SceneComponent {
+public abstract class Light extends SceneComponent implements Trackable {
   private Vector3f position = new Vector3f(0, 0, 0);
   private Vector3f colour = new Vector3f(0, 0, 0);
 
@@ -53,6 +53,7 @@ public abstract class Light extends SceneComponent {
     return quadratic;
   }
 
+  @Override
   public Vector3f getPosition() {
     return position;
   }

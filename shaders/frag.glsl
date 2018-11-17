@@ -48,11 +48,11 @@ void main() {
       Light light = lights[i];
       if (light.on) {
         vec3 N = normalize(frag_normal);
-        vec3 L = normalize(frag_pos - light.pos);
-        vec3 V = normalize(frag_pos - cam_pos);
+        vec3 L = normalize(light.pos - frag_pos);
+        vec3 V = normalize(cam_pos - frag_pos);
         vec3 H = normalize(L + V);
 
-        float distance = length(frag_pos - light.pos);
+        float distance = length(light.pos - frag_pos);
         float attentuation = 1.0 / (light.constant + light.linear * distance +
                                          light.quadratic * (distance * distance));
 

@@ -4,9 +4,9 @@
 
 - [ ] Framebuffers (N)
 - [ ] Re-structure rendering pipeline (N)
-- [ ] GameObject management (N)
+- [x] GameObject management (N)
 - [ ] GameState system (N)
 - [ ] Particle system (N)
 - [ ] Engine callbacks (N)
 
-- [ ] JBox integration
+- [ ] JBox integration/ODE4J integration

@@ -10,42 +10,86 @@ public class Cube extends Model {
   }
 
   private static FloatBuffer vertices() {
-    FloatBuffer vertices = BufferUtils.createFloatBuffer(24);
+    FloatBuffer vertices = BufferUtils.createFloatBuffer(72);
     vertices
         .put(
             new float[] {
-              -1, -1, -1, // 0
-              1, -1, -1, // 1
-              1, 1, -1, // 2
-              -1, 1, -1, // 3
-              -1, -1, 1, // 4
-              1, -1, 1, // 5
-              1, 1, 1, // 6
-              -1, 1, 1 // 7
+              // Front
+              -1, -1, -1,
+              1, -1, -1,
+              1, 1, -1,
+              -1, 1, -1,
+              // Left
+              -1, -1, -1,
+              -1, 1, -1,
+              -1, 1, 1,
+              -1, -1, 1,
+              // Right
+              1, -1, -1,
+              1, 1, -1,
+              1, 1, 1,
+              1, -1, 1,
+              // Top
+              -1, 1, -1,
+              1, 1, -1,
+              1, 1, 1,
+              -1, 1, 1,
+              // Bottom
+              -1, -1, -1,
+              1, -1, -1,
+              1, -1, 1,
+              -1, -1, 1,
+              // Back
+              -1, -1, 1,
+              1, -1, 1,
+              1, 1, 1,
+              -1, 1, 1
             })
         .flip();
     return vertices;
   }
 
   private static FloatBuffer normals() {
-    FloatBuffer normals = BufferUtils.createFloatBuffer(24);
+    FloatBuffer normals = BufferUtils.createFloatBuffer(72);
     normals.put(
-      new float[] {
-        -1, -1, -1, // 0
-        1, -1, -1, // 1
-        1, 1, -1, // 2
-        -1, 1, -1, // 3
-        -1, -1, 1, // 4
-        1, -1, 1, // 5
-        1, 1, 1, // 6
-        -1, 1, 1 // 7
-      });
+        new float[] {
+          // Front
+          0, 0, -1,
+          0, 0, -1,
+          0, 0, -1,
+          0, 0, -1,
+          // Left
+          -1, 0, 0,
+          -1, 0, 0,
+          -1, 0, 0,
+          -1, 0, 0,
+          // Right
+          1, 0, 0,
+          1, 0, 0,
+          1, 0, 0,
+          1, 0, 0,
+          // Top
+          0, 1, 0,
+          0, 1, 0,
+          0, 1, 0,
+          0, 1, 0,
+          // Bottom
+          0, -1, 0,
+          0, -1, 0,
+          0, -1, 0,
+          0, -1, 0,
+          // Back
+          0, 0, 1,
+          0, 0, 1,
+          0, 0, 1,
+          0, 0, 1,
+        });
     normals.flip();
     return normals;
   }
 
   private static FloatBuffer textures(boolean mapped) {
-    FloatBuffer textures = BufferUtils.createFloatBuffer(16);
+    FloatBuffer textures = BufferUtils.createFloatBuffer(48);
     textures.flip();
     return textures;
   }
@@ -57,16 +101,16 @@ public class Cube extends Model {
             new int[] {
               0, 3, 2, // Front
               0, 2, 1,
-              3, 7, 6, // Top
-              3, 6, 2,
-              1, 2, 5, // Right
-              2, 6, 5,
-              4, 3, 0, // Left
-              7, 3, 4,
-              1, 4, 0, // Bottom
-              1, 5, 4,
-              6, 7, 4, // Back
-              5, 6, 4
+              5, 4, 7, // Left
+              6, 5, 7,
+              11, 8, 9, // Right
+              11, 9, 10,
+              12, 15, 13, // Top
+              13, 15, 14,
+              17, 19, 16, // Bottom
+              18, 19, 17,
+              22, 23, 20, // Back
+              21, 22, 20,
             })
         .flip();
     return indices;

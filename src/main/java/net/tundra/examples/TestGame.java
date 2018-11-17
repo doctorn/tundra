@@ -68,6 +68,10 @@ public class TestGame extends Game {
     }
 
     g.drawModel(
+        Model.CUBE,
+        new Matrix4f().translate(5, -3, 5).rotate((float) Math.PI / 6f, new Vector3f(0, 1, 0)));
+
+    g.drawModel(
         Model.PLANE,
         new Matrix4f()
             .translate(0, -4f, 0f)

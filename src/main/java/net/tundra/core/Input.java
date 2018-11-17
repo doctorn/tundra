@@ -12,7 +12,7 @@ public class Input {
   private boolean[] previousKeys;
   private boolean[] mouseEvents;
 
-  private int previousMouseX, previousMouseY, currentMouseX, currentMouseY;
+  private int dMouseX, dMouseY, currentMouseX, currentMouseY;
 
   public Input() {
     Keyboard.enableRepeatEvents(true);
@@ -22,16 +22,13 @@ public class Input {
 
     mouseButtons = Mouse.getButtonCount();
     mouseEvents = new boolean[mouseButtons];
-
-    previousMouseX = getMouseX();
-    previousMouseY = getMouseY();
   }
 
   public void update() {
-    previousMouseX = currentMouseX;
-    previousMouseY = currentMouseY;
     currentMouseX = getMouseX();
     currentMouseY = getMouseY();
+    dMouseX = Mouse.getDX();
+    dMouseY = Mouse.getDY();
 
     Keyboard.poll();
     currentKeys = new boolean[KEYS];
@@ -77,11 +74,11 @@ public class Input {
   }
 
   public int getMouseDX() {
-    return getMouseX() - previousMouseX;
+    return dMouseX;
   }
 
   public int getMouseDY() {
-    return getMouseY() - previousMouseY;
+    return dMouseY;
   }
 
   public int getDWheel() {

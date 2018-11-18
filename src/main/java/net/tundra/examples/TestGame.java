@@ -17,6 +17,7 @@ public class TestGame extends Game {
   private Animation android;
   private Camera camera, camera2, active;
   private Font font;
+  float angle;
 
   public TestGame() {
     super(1920, 1080, "tundra", true);
@@ -30,20 +31,28 @@ public class TestGame extends Game {
     addCamera(camera2);
     active = camera2;
 
+    FixedLight main = new FixedLight(4, 4, 4, 1, 1, 1);
     addLight(new FixedLight(4, 0, 0, 0, 0, 1));
     addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
-    addLight(new FixedLight(0, 3, 0, 1, 1, 1));
+    addLight(main);
     android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();
 
     SpriteSheet fontSheet = new SpriteSheet("res/font.png", 20, 22);
     font = new Font(fontSheet);
     getInput().setMouseGrabbed(true);
+
+    Camera shadow = new ShadowCamera();
+    shadow.setPosition(new Vector3f(4, 4, 4));
+    shadow.setTarget(new Vector3f(0, 0, 0));
+    enableShadowMapping(shadow, main);
+    addCamera(shadow);
   }
 
   @Override
   public void update(int delta) throws TundraException {
     android.update(delta);
+    angle += 0.001f * delta;
 
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_C)) {
       if (active == camera) active = camera2;
@@ -70,6 +79,13 @@ public class TestGame extends Game {
     g.drawModel(
         Model.CUBE,
         new Matrix4f().translate(5, -3, 5).rotate((float) Math.PI / 6f, new Vector3f(0, 1, 0)));
+    g.drawModel(
+        Model.CUBE,
+        new Matrix4f()
+            .translate(-7, 0, 3)
+            .scale(((float) Math.sin(angle) + 2) / 3f)
+            .rotate(angle, new Vector3f(0, 1, 0))
+            .rotate(angle, new Vector3f(1, 0, 0)));
 
     g.drawModel(
         Model.PLANE,

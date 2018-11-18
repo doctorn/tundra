@@ -10,8 +10,14 @@ public class Model {
   public static final Model CUBE = new Cube(false);
   public static final Model PLANE = new Plane();
   private int vertexArray, vertexHandle, normalHandle, textureHandle, indexHandle, indexCount;
+  private boolean solid;
 
-  public Model(FloatBuffer vertices, FloatBuffer normals, FloatBuffer textures, IntBuffer indices) {
+  public Model(
+      FloatBuffer vertices,
+      FloatBuffer normals,
+      FloatBuffer textures,
+      IntBuffer indices,
+      boolean solid) {
     indexCount = indices.capacity();
 
     vertexArray = glGenVertexArrays();
@@ -32,6 +38,8 @@ public class Model {
     indexHandle = glGenBuffers();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexHandle);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+
+    this.solid = solid;
   }
 
   public int getModel() {
@@ -56,5 +64,9 @@ public class Model {
 
   public int getIndexCount() {
     return indexCount;
+  }
+
+  public boolean solid() {
+    return solid;
   }
 }

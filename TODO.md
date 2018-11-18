@@ -2,8 +2,8 @@
 - [ ] Audio (T)
 - [ ] .obj loading (T)
 
-- [ ] Framebuffers (N)
-- [ ] Re-structure rendering pipeline (N)
+- [x] Framebuffers (N)
+- [x] Re-structure rendering pipeline (N)
 - [x] GameObject management (N)
 - [ ] GameState system (N)
 - [ ] Particle system (N)

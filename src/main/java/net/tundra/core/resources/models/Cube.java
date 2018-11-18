@@ -6,7 +6,7 @@ import org.lwjgl.BufferUtils;
 
 public class Cube extends Model {
   public Cube(boolean mapped) {
-    super(vertices(), normals(), textures(mapped), indices());
+    super(vertices(), normals(), textures(mapped), indices(), true);
   }
 
   private static FloatBuffer vertices() {

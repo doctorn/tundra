@@ -6,7 +6,7 @@ import org.lwjgl.BufferUtils;
 
 public class Plane extends Model {
   public Plane() {
-    super(vertices(), normals(), textures(), indices());
+    super(vertices(), normals(), textures(), indices(), false);
   }
 
   private static FloatBuffer vertices() {

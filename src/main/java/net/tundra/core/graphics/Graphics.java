@@ -1,10 +1,17 @@
 package net.tundra.core.graphics;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL21.*;
 import static org.lwjgl.opengl.GL30.*;
+import static org.lwjgl.opengl.GL31.*;
 
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.resources.models.Model;
@@ -17,44 +24,74 @@ import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.InterfaceCamera;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
 
 public class Graphics {
   private static final Camera INTERFACE_CAMERA = new InterfaceCamera();
-  private static final int MAX_LIGHTS = 128;
+  private static final int MAX_LIGHTS = 64;
+  public static final int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
   private Game game;
-  private Program program;
+  private Program program, shadows;
   private Camera camera;
+  private List<Draw> scene = new ArrayList<>();
+  private List<Draw> external = new ArrayList<>();
+
+  private int depthBuffer, depthMap;
 
   public Graphics(Game game) throws TundraException {
     this.game = game;
+    glClearColor(0f, 0f, 0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
-    glEnable(GL_FRAMEBUFFER_SRGB);
     glCullFace(GL_BACK);
+    glEnable(GL_FRAMEBUFFER_SRGB);
 
     VertexShader vertex = new VertexShader("shaders/vert.glsl");
     FragmentShader fragment = new FragmentShader("shaders/frag.glsl");
     program = new Program(vertex, fragment);
     vertex.delete();
     fragment.delete();
+
+    vertex = new VertexShader("shaders/shadow_vert.glsl");
+    fragment = new FragmentShader("shaders/shadow_frag.glsl");
+    shadows = new Program(vertex, fragment);
+    vertex.delete();
+    fragment.delete();
+
+    depthBuffer = glGenFramebuffers();
+    depthMap = glGenTextures();
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_DEPTH_COMPONENT,
+        Graphics.SHADOW_WIDTH,
+        Graphics.SHADOW_HEIGHT,
+        0,
+        GL_DEPTH_COMPONENT,
+        GL_FLOAT,
+        (ByteBuffer) null);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+    FloatBuffer colour = BufferUtils.createFloatBuffer(4);
+    colour.put(1.0f).put(1.0f).put(1.0f).put(1.0f).flip();
+    glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, colour);
+    glBindTexture(GL_TEXTURE_2D, 0);
   }
 
   public void use(Camera camera) {
     this.camera = camera;
   }
 
+  public void setClearColour(Vector3f colour) {
+    glClearColor(colour.x, colour.y, colour.z, 1.0f);
+  }
+
   public void drawModelWireframe(Model model, Matrix4f transform) throws TundraException {
-    glPolygonMode(GL_FRONT, GL_LINE);
-    glPolygonMode(GL_BACK, GL_LINE);
-    glDisable(GL_CULL_FACE);
-    boolean temp = game.lightingEnabled();
-    game.setLighting(false);
-    drawModel(model, transform);
-    game.setLighting(temp);
-    glEnable(GL_CULL_FACE);
-    glPolygonMode(GL_FRONT, GL_FILL);
-    glPolygonMode(GL_BACK, GL_FILL);
+    scene.add(new Draw(false, true, model, null, transform));
   }
 
   public void drawModel(Model model, Matrix4f transform) throws TundraException {
@@ -62,46 +99,7 @@ public class Graphics {
   }
 
   public void drawModel(Model model, Sprite texture, Matrix4f transform) throws TundraException {
-    glUseProgram(program.getProgram());
-    program.uniform(
-        "mvp_matrix",
-        camera.getViewProjectionMatrix(game.getWidth(), game.getHeight()).mul(transform));
-    program.uniform("model_matrix", transform);
-    Matrix4f transformInverse = new Matrix4f();
-    transform.invert(transformInverse);
-    transformInverse.transpose();
-    program.uniform("model_matrix_inverse", transformInverse);
-    program.uniform("cam_pos", camera.getPosition());
-    program.uniform("ambient", new Vector3f(0.001f, 0.001f, 0.001f));
-    program.uniform("alpha", 1f);
-    program.uniform("lighting", game.lightingEnabled());
-    if (game.lightingEnabled()) {
-      for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)
-        program.uniform("lights[" + i + "]", game.getLights().get(i));
-      program.uniform("light_count", game.getLights().size());
-    }
-
-    if (texture != null) {
-      program.uniform("texturing", true);
-      glBindTexture(GL_TEXTURE_2D, texture.getTexture());
-      program.uniform("tex_start", texture.getStartVector());
-      program.uniform("tex_size", texture.getSizeVector());
-    } else {
-      program.uniform("texturing", false);
-      glBindTexture(GL_TEXTURE_2D, 0);
-    }
-    glBindVertexArray(model.getModel());
-    glBindBuffer(GL_ARRAY_BUFFER, model.getVertices());
-    program.attrib("vertex", 3);
-    glBindBuffer(GL_ARRAY_BUFFER, model.getNormals());
-    program.attrib("normal", 3);
-    glBindBuffer(GL_ARRAY_BUFFER, model.getTextureCoords());
-    program.attrib("tex_coord", 2);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model.getIndices());
-    glDrawElements(GL_TRIANGLES, model.getIndexCount(), GL_UNSIGNED_INT, 0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindVertexArray(0);
-    glUseProgram(0);
+    scene.add(new Draw(game.lightingEnabled(), false, model, texture, transform));
   }
 
   public void drawString(String string, Font font, int x, int y) throws TundraException {
@@ -110,25 +108,169 @@ public class Graphics {
   }
 
   public void drawImage(Sprite sprite, int x, int y) throws TundraException {
-    boolean temp = game.lightingEnabled();
-    game.setLighting(false);
-    glDisable(GL_DEPTH_TEST);
-    Camera previous = camera;
-    camera = INTERFACE_CAMERA;
-    drawModel(
-        Model.PLANE,
-        sprite,
-        new Matrix4f()
-            .translate(x, game.getHeight() - y, 0)
-            .scale(sprite.getWidth() / 2f, sprite.getHeight() / 2f, 1)
-            .translate(1, -1, 0));
-    camera = previous;
-    game.setLighting(temp);
-    glEnable(GL_DEPTH_TEST);
+    external.add(
+        new Draw(
+            false,
+            false,
+            Model.PLANE,
+            sprite,
+            new Matrix4f()
+                .translate(x, game.getHeight() - y, 0)
+                .scale(sprite.getWidth() / 2f, sprite.getHeight() / 2f, 1)
+                .translate(1, -1, 0)));
   }
 
-  public void clear() {
-    glClearColor(0f, 0f, 0f, 1.0f);
+  public void render() throws TundraException {
+    Camera cached = camera;
+
+    if (game.shadowMapping()) {
+      glUseProgram(shadows.getProgram());
+      glBindFramebuffer(GL_FRAMEBUFFER, depthBuffer);
+      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+      glDrawBuffer(GL_NONE);
+      glReadBuffer(GL_NONE);
+      glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+      glClear(GL_DEPTH_BUFFER_BIT);
+      for (Draw draw : scene) draw.shadowMap();
+      glBindTexture(GL_TEXTURE_2D, 0);
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      glViewport(0, 0, game.getWidth(), game.getHeight());
+    }
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    camera = cached;
+    glUseProgram(program.getProgram());
+    program.uniform("shadow_mapping", game.shadowMapping());
+    if (game.shadowMapping()) {
+      program.uniform(
+          "shadow_vp_matrix",
+          game.getShadowCamera().getViewProjectionMatrix(SHADOW_WIDTH, SHADOW_HEIGHT));
+    }
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, depthMap);
+    program.uniform("depth_map", 1);
+    program.uniform("cam_pos", camera.getPosition());
+    program.uniform("ambient", new Vector3f(0.001f, 0.001f, 0.001f));
+    program.uniform("alpha", 1f);
+    for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)
+      program.uniform("lights[" + i + "]", game.getLights().get(i));
+    program.uniform("light_count", game.getLights().size());
+    for (Draw draw : scene) draw.execute();
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glUseProgram(0);
+
+    camera = INTERFACE_CAMERA;
+    glDisable(GL_DEPTH_TEST);
+    glUseProgram(program.getProgram());
+    program.uniform("cam_pos", camera.getPosition());
+    program.uniform("shadow_mapping", false);
+    for (Draw draw : external) draw.execute();
+    camera = cached;
+    glEnable(GL_DEPTH_TEST);
+    glUseProgram(0);
+
+    scene = new ArrayList<>();
+    external = new ArrayList<>();
+  }
+
+  private class Draw {
+    private boolean lighting, wireframe;
+    private Model model;
+    private Matrix4f transform;
+    private Sprite texture;
+
+    public Draw(
+        boolean lighting, boolean wireframe, Model model, Sprite texture, Matrix4f transform) {
+      this.lighting = lighting;
+      this.wireframe = wireframe;
+      this.model = model;
+      this.transform = transform;
+      this.texture = texture;
+    }
+
+    public void shadowMap() throws TundraException {
+      if (lighting) {
+        if (model.solid()) glCullFace(GL_FRONT);
+        if (texture != null) {
+          shadows.uniform("texturing", true);
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+          shadows.uniform("tex", 0);
+          shadows.uniform("tex_start", texture.getStartVector());
+          shadows.uniform("tex_size", texture.getSizeVector());
+        } else {
+          shadows.uniform("texturing", false);
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        shadows.uniform(
+            "mvp_matrix",
+            game.getShadowCamera()
+                .getViewProjectionMatrix(SHADOW_WIDTH, SHADOW_HEIGHT)
+                .mul(transform));
+        glBindBuffer(GL_ARRAY_BUFFER, model.getVertices());
+        shadows.attrib("vertex", 3);
+        glBindBuffer(GL_ARRAY_BUFFER, model.getTextureCoords());
+        shadows.attrib("tex_coord", 2);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model.getIndices());
+        glDrawElements(GL_TRIANGLES, model.getIndexCount(), GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        if (model.solid()) glCullFace(GL_BACK);
+      }
+    }
+
+    public void execute() throws TundraException {
+      if (wireframe) {
+        glPolygonMode(GL_FRONT, GL_LINE);
+        glPolygonMode(GL_BACK, GL_LINE);
+        glDisable(GL_CULL_FACE);
+      }
+
+      program.uniform(
+          "mvp_matrix",
+          camera.getViewProjectionMatrix(game.getWidth(), game.getHeight()).mul(transform));
+      program.uniform("model_matrix", transform);
+      Matrix4f transformInverse = new Matrix4f();
+      transform.invert(transformInverse);
+      transformInverse.transpose();
+      program.uniform("model_matrix_inverse", transformInverse);
+      program.uniform("lighting", lighting);
+
+      if (texture != null) {
+        program.uniform("texturing", true);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+        program.uniform("tex", 0);
+        program.uniform("tex_start", texture.getStartVector());
+        program.uniform("tex_size", texture.getSizeVector());
+      } else {
+        program.uniform("texturing", false);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+      }
+
+      glBindVertexArray(model.getModel());
+      glBindBuffer(GL_ARRAY_BUFFER, model.getVertices());
+      program.attrib("vertex", 3);
+      glBindBuffer(GL_ARRAY_BUFFER, model.getNormals());
+      program.attrib("normal", 3);
+      glBindBuffer(GL_ARRAY_BUFFER, model.getTextureCoords());
+      program.attrib("tex_coord", 2);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model.getIndices());
+      glDrawElements(GL_TRIANGLES, model.getIndexCount(), GL_UNSIGNED_INT, 0);
+
+      if (wireframe) {
+        glEnable(GL_CULL_FACE);
+        glPolygonMode(GL_FRONT, GL_FILL);
+        glPolygonMode(GL_BACK, GL_FILL);
+      }
+
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, 0);
+      glBindVertexArray(0);
+    }
   }
 }

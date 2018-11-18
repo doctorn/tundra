@@ -1,5 +1,10 @@
 package net.tundra.core.scene;
 
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL30.*;
+
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.graphics.Graphics;
@@ -16,6 +21,7 @@ public abstract class Light extends SceneComponent implements Trackable {
   private float quadratic = 1f;
 
   private boolean active = true;
+  private boolean shadowMapped = false;
 
   public Light() {}
 
@@ -76,6 +82,18 @@ public abstract class Light extends SceneComponent implements Trackable {
 
   public void setQuadratic(float quadratic) {
     this.quadratic = quadratic;
+  }
+
+  public void enableShadowMapping() {
+    shadowMapped = true;
+  }
+
+  public void disableShadowMapping() {
+    shadowMapped = false;
+  }
+
+  public boolean shadowMapped() {
+    return shadowMapped;
   }
 
   public abstract void update(Game game, int delta);

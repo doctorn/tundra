@@ -18,11 +18,13 @@ public abstract class Game {
   private Input input;
   private int width, height;
   private String title;
-  private boolean fullscreen, debug = false, lighting = true;
+  private boolean fullscreen, debug = false, lighting = true, shadowMapping = false;
   private Graphics graphics;
   private List<Light> lights = new ArrayList<>();
   private List<Camera> cameras = new ArrayList<>();
   private List<GameObject> objects = new ArrayList<>();
+  private Camera shadowCamera;
+  private Light shadowLight;
 
   private int fps = 0, frameCount = 0, cumulativeDelta = 0;
 
@@ -74,19 +76,20 @@ public abstract class Game {
       cleanup(lights);
       cleanup(cameras);
 
-      graphics.clear();
       for (GameObject object : objects) object.render(this, graphics);
       render(graphics);
       if (debug) {
         for (Light light : lights) light.renderDebug(this, graphics);
         for (Camera camera : cameras) camera.renderDebug(this, graphics);
       }
+      graphics.render();
+
       checkError();
       Display.update();
     } while (!Display.isCloseRequested());
   }
 
-  private void checkError() throws TundraException {
+  public void checkError() throws TundraException {
     int error = glGetError();
     if (error != GL_NO_ERROR) {
       throw new TundraException("OpenGL errored with error code " + error);
@@ -103,6 +106,27 @@ public abstract class Game {
 
   public int getFPS() {
     return fps;
+  }
+
+  public void enableShadowMapping(Camera camera, Light light) {
+    if (shadowLight != null) shadowLight.disableShadowMapping();
+    light.enableShadowMapping();
+    shadowLight = light;
+    shadowCamera = camera;
+    shadowMapping = true;
+  }
+
+  public void disableShadowMapping() {
+    shadowMapping = false;
+    shadowLight.disableShadowMapping();
+  }
+
+  public boolean shadowMapping() {
+    return shadowMapping;
+  }
+
+  public Camera getShadowCamera() {
+    return shadowCamera;
   }
 
   public Input getInput() {

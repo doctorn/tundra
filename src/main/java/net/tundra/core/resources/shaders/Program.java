@@ -103,6 +103,7 @@ public class Program {
     uniform(name + ".quadratic", value.getQuadratic());
     uniform(name + ".quadratic", value.getQuadratic());
     uniform(name + ".on", value.active());
+    uniform(name + ".shadow_mapped", value.shadowMapped());
   }
 
   public void attrib(String name, int size) throws TundraException {

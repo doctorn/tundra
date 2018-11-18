@@ -30,6 +30,7 @@ uniform Light lights[MAX_LIGHTS];
 
 uniform bool shadow_mapping;
 uniform sampler2D depth_map;
+uniform vec3 shadow_dir;
 
 uniform int light_count;
 uniform vec3 ambient;
@@ -44,17 +45,17 @@ float shadow(vec3 normal, vec3 light_dir) {
   if (proj.z > 1.)
     return 0.;
   float current = proj.z;
-  float bias = 0.005 * tan(acos(dot(normal, light_dir)));
+  float bias = 0.005 * tan(acos(abs(dot(normal, shadow_dir))));
   bias = clamp(bias, 0, 0.01);
   float shadow = 0.0;
   vec2 size = 1.0 / textureSize(depth_map, 0);
-  for(int i = -1; i < 1; i++) {
-      for(int j = -1; j < 1; j++) {
+  for(int i = -2; i < 2; i++) {
+      for(int j = -2; j < 2; j++) {
           float depth = texture(depth_map, proj.xy + vec2(i, j) * size).r;
           shadow += current - bias > depth ? 1.0 : 0.0;
       }
   }
-  return shadow / 9.;
+  return shadow / 25.;
 }
 
 void main() {

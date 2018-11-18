@@ -29,7 +29,7 @@ import org.lwjgl.BufferUtils;
 public class Graphics {
   private static final Camera INTERFACE_CAMERA = new InterfaceCamera();
   private static final int MAX_LIGHTS = 64;
-  public static final int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+  public static final int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 
   private Game game;
   private Program program, shadows;
@@ -142,6 +142,7 @@ public class Graphics {
     glUseProgram(program.getProgram());
     program.uniform("shadow_mapping", game.shadowMapping());
     if (game.shadowMapping()) {
+      program.uniform("shadow_dir", game.getShadowCamera().getLook().mul(-1));
       program.uniform(
           "shadow_vp_matrix",
           game.getShadowCamera().getViewProjectionMatrix(SHADOW_WIDTH, SHADOW_HEIGHT));

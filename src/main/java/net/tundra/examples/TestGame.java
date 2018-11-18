@@ -31,9 +31,9 @@ public class TestGame extends Game {
     addCamera(camera2);
     active = camera2;
 
-    FixedLight main = new FixedLight(4, 4, 4, 1, 1, 1);
-    addLight(new FixedLight(4, 0, 0, 0, 0, 1));
-    addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
+    FixedLight main = new FixedLight(19, 3, 19, 1, 1, 1);
+    // addLight(new FixedLight(4, 0, 0, 0, 0, 1));
+    // addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
     addLight(main);
     android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();
@@ -43,7 +43,7 @@ public class TestGame extends Game {
     getInput().setMouseGrabbed(true);
 
     Camera shadow = new ShadowCamera();
-    shadow.setPosition(new Vector3f(4, 4, 4));
+    shadow.setPosition(new Vector3f(19, 3, 19));
     shadow.setTarget(new Vector3f(0, 0, 0));
     enableShadowMapping(shadow, main);
     addCamera(shadow);

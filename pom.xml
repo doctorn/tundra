@@ -38,6 +38,11 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>cz.advel.jbullet</groupId>
+      <artifactId>jbullet</artifactId>
+      <version>20101010</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

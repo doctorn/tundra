@@ -15,7 +15,7 @@ import org.joml.Vector3f;
 
 public class TestGame extends Game {
   private Animation android;
-  private Camera camera, camera2, active;
+  private Camera camera, camera2;
   private Font font;
   float angle;
 
@@ -29,7 +29,7 @@ public class TestGame extends Game {
     camera2 = new FPSCamera(new Vector3f(0, -3f, 0));
     addCamera(camera);
     addCamera(camera2);
-    active = camera2;
+    activate(camera2);
 
     FixedLight main = new FixedLight(19, 3, 19, 1, 1, 1);
     addLight(new FixedLight(4, 0, 0, 0, 0, 1));
@@ -55,11 +55,11 @@ public class TestGame extends Game {
     angle += 0.001f * delta;
 
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_C)) {
-      if (active == camera) active = camera2;
-      else active = camera;
+      if (getCamera() == camera) activate(camera2);
+      else activate(camera);
     }
 
-    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_V)) active.togglePerspective();
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_V)) getCamera().togglePerspective();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_T)) toggleDebug();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_L)) toggleLighting();
 
@@ -71,14 +71,13 @@ public class TestGame extends Game {
 
   @Override
   public void render(Graphics g) throws TundraException {
-    g.use(active);
     for (int i = -5; i < 5; i++) {
       Vector3f position = new Vector3f(i, -3.5f, -2);
       Matrix4f transform =
           new Matrix4f()
               .translate(position)
               .scale(0.5f)
-              .lookAlong(active.getLookAlong(), active.getUp());
+              .lookAlong(getCamera().getLookAlong(), getCamera().getUp());
       g.drawModel(Model.PLANE, android.currentFrame(), transform);
     }
 

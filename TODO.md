@@ -7,7 +7,7 @@
 
 - [ ] GameState system
 - [ ] Particle system
-- [ ] Engine callbacks
+- [x] Engine callbacks
 - [ ] ODE4J integration
 
 ### Lighting

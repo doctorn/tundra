@@ -33,7 +33,6 @@ public class Graphics {
 
   private Game game;
   private Program program, shadows;
-  private Camera camera;
   private List<Draw> scene = new ArrayList<>();
   private List<Draw> external = new ArrayList<>();
 
@@ -82,10 +81,6 @@ public class Graphics {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
-  public void use(Camera camera) {
-    this.camera = camera;
-  }
-
   public void setClearColour(Vector3f colour) {
     glClearColor(colour.x, colour.y, colour.z, 1.0f);
   }
@@ -121,8 +116,6 @@ public class Graphics {
   }
 
   public void render() throws TundraException {
-    Camera cached = camera;
-
     if (game.shadowMapping()) {
       glUseProgram(shadows.getProgram());
       glBindFramebuffer(GL_FRAMEBUFFER, depthBuffer);
@@ -138,7 +131,6 @@ public class Graphics {
     }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    camera = cached;
     glUseProgram(program.getProgram());
     program.uniform("shadow_mapping", game.shadowMapping());
     if (game.shadowMapping()) {
@@ -150,25 +142,23 @@ public class Graphics {
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthMap);
     program.uniform("depth_map", 1);
-    program.uniform("cam_pos", camera.getPosition());
+    program.uniform("cam_pos", game.getCamera().getPosition());
     program.uniform("ambient", new Vector3f(0.001f, 0.001f, 0.001f));
     program.uniform("alpha", 1f);
     for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)
       program.uniform("lights[" + i + "]", game.getLights().get(i));
     program.uniform("light_count", game.getLights().size());
-    for (Draw draw : scene) draw.execute();
+    for (Draw draw : scene) draw.execute(game.getCamera());
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0);
     glUseProgram(0);
 
-    camera = INTERFACE_CAMERA;
     glDisable(GL_DEPTH_TEST);
     glUseProgram(program.getProgram());
-    program.uniform("cam_pos", camera.getPosition());
+    program.uniform("cam_pos", INTERFACE_CAMERA.getPosition());
     program.uniform("shadow_mapping", false);
-    for (Draw draw : external) draw.execute();
-    camera = cached;
+    for (Draw draw : external) draw.execute(INTERFACE_CAMERA);
     glEnable(GL_DEPTH_TEST);
     glUseProgram(0);
 
@@ -223,7 +213,7 @@ public class Graphics {
       }
     }
 
-    public void execute() throws TundraException {
+    public void execute(Camera camera) throws TundraException {
       if (wireframe) {
         glPolygonMode(GL_FRONT, GL_LINE);
         glPolygonMode(GL_BACK, GL_LINE);

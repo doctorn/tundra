@@ -25,7 +25,7 @@ public abstract class Game {
   private List<Camera> cameras = new ArrayList<>();
   private List<GameObject> objects = new ArrayList<>();
   private List<Event> events = new ArrayList<>();
-  private Camera shadowCamera;
+  private Camera active, shadowCamera;
   private Light shadowLight;
 
   private int fps = 0, frameCount = 0, cumulativeDelta = 0;
@@ -179,6 +179,14 @@ public abstract class Game {
     Event event = new Event(action, timeout, true);
     events.add(event);
     return event;
+  }
+
+  public void activate(Camera camera) {
+    active = camera;
+  }
+
+  public Camera getCamera() {
+    return active;
   }
 
   private void cleanup(List<? extends SceneComponent> components) {

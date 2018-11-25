@@ -15,5 +15,5 @@
 ### Lighting
 
 - [ ] Bloom
-- [ ] Directional lights
+- [x] Directional lights
 - [ ] Spot lights

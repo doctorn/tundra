@@ -15,6 +15,7 @@ uniform vec2 tex_size;
 
 struct Light {
     vec3 pos;
+    vec3 dir;
     vec3 col;
 
     float constant;
@@ -23,6 +24,7 @@ struct Light {
 
     bool on;
     bool shadow_mapped;
+    bool directional;
 };
 
 uniform bool lighting;
@@ -73,16 +75,20 @@ void main() {
       Light light = lights[i];
       if (light.on) {
         vec3 N = normalize(frag_normal);
-        vec3 L = normalize(light.pos - frag_pos);
+        vec3 L = normalize(-light.dir);
+        if (!light.directional)
+          L = normalize(light.pos - frag_pos);
         vec3 V = normalize(cam_pos - frag_pos);
-        vec3 H = normalize(L + V);
+        vec3 R = reflect(-L, N);
 
         float distance = length(light.pos - frag_pos);
-        float attentuation = 1.0 / (light.constant + light.linear * distance +
+        float attentuation = 1.0;
+        if (!light.directional)
+          attentuation = 1.0 / (light.constant + light.linear * distance +
                                          light.quadratic * (distance * distance));
 
         vec3 diff = light.col * max((dot(N, L)), 0.0) * vec3(colour);
-        vec3 spec = light.col * pow(max(dot(N, H), 0.0), alpha) * vec3(colour);
+        vec3 spec = light.col * pow(max(dot(V, R), 0.0), alpha) * vec3(colour);
 
         float shadow_scalar = 1.;
         if (light.shadow_mapped)

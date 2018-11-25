@@ -25,13 +25,16 @@ public class TestGame extends Game {
 
   @Override
   public void init() throws TundraException {
-    camera = new OrbitalCamera(new Vector3f(0, 0, -1), 10f);
-    camera2 = new FPSCamera(new Vector3f(0, -3f, 0));
+    Box player = new Box(this, new Vector3f(0, 0, 0));
+    addObject(player);
+    camera = new OrbitalCamera(player, 10f);
+    camera2 = new FPSCamera(player);
     addCamera(camera);
     addCamera(camera2);
-    activate(camera2);
+    activate(camera);
 
-    FixedLight main = new FixedLight(19, 3, 19, 1, 1, 1);
+    FixedLight main = new FixedLight(50, 50, 50, 0.4f, 0.4f, 0.4f);
+    main.setDirectional(new Vector3f(-1, -1, -1).normalize());
     addLight(new FixedLight(4, 0, 0, 0, 0, 1));
     addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
     addLight(main);
@@ -43,10 +46,22 @@ public class TestGame extends Game {
     getInput().setMouseGrabbed(true);
 
     Camera shadow = new ShadowCamera();
-    shadow.setPosition(new Vector3f(19, 3, 19));
+    shadow.setPosition(new Vector3f(50, 50, 50));
     shadow.setTarget(new Vector3f(0, 0, 0));
     enableShadowMapping(shadow, main);
     addCamera(shadow);
+
+    togglePhysics();
+    setGravity(new Vector3f(0, -10, 0));
+
+    addObject(new Floor());
+
+    for (int i = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        for (int k = 0; k < 8; k++)
+          addObject(new Box(this, new Vector3f(5f + i * 2.1f, -4f + 0.1f + j * 2f, 5f + k * 2f)));
+      }
+    }
   }
 
   @Override
@@ -65,8 +80,7 @@ public class TestGame extends Game {
 
     if (getInput().isMouseButtonPressed(0))
       addObject(
-          new Bullet(
-              this, camera2.getPosition().add(camera2.getLook().mul(0.5f)), camera2.getLook()));
+          new Box(this, camera2.getPosition().add(camera2.getLook().mul(0.5f)), camera2.getLook()));
   }
 
   @Override
@@ -79,41 +93,6 @@ public class TestGame extends Game {
               .scale(0.5f)
               .lookAlong(getCamera().getLookAlong(), getCamera().getUp());
       g.drawModel(Model.PLANE, android.currentFrame(), transform);
-    }
-
-    g.drawModel(
-        Model.CUBE,
-        new Matrix4f().translate(5, -3, 5).rotate((float) Math.PI / 6f, new Vector3f(0, 1, 0)));
-    g.drawModel(
-        Model.CUBE,
-        new Matrix4f()
-            .translate(-7, 0, 3)
-            .scale(((float) Math.sin(angle) + 2) / 3f)
-            .rotate(angle, new Vector3f(0, 1, 0))
-            .rotate(angle, new Vector3f(1, 0, 0)));
-
-    g.drawModel(
-        Model.PLANE,
-        new Matrix4f()
-            .translate(0, -4f, 0f)
-            .scale(20f)
-            .rotate(-(float) Math.PI / 2f, new Vector3f(1, 0, 0)));
-
-    g.drawModel(
-        Model.PLANE,
-        new Matrix4f()
-            .translate(0, 4f, 0f)
-            .scale(20f)
-            .rotate(-(float) Math.PI * 3f / 2f, new Vector3f(1, 0, 0)));
-
-    for (int i = 0; i < 4; i++) {
-      g.drawModel(
-          Model.PLANE,
-          new Matrix4f()
-              .rotate((float) Math.PI * i / 2f, new Vector3f(0, 1, 0))
-              .translate(0, 0f, 20f)
-              .scale(20f, 4f, 1f)
-              .rotate(-(float) Math.PI, new Vector3f(1, 0, 0)));
     }
 
     g.drawString(getFPS() + " FPS", font, 10, 10);

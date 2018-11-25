@@ -8,7 +8,9 @@
 - [ ] GameState system
 - [ ] Particle system
 - [x] Engine callbacks
-- [ ] ODE4J integration
+- [x] JBullet integration
+- [ ] Coherent JBullet interface
+- [ ] Models as JBullet collision shapes
 
 ### Lighting
 

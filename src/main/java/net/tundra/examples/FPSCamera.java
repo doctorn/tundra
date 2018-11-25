@@ -4,15 +4,19 @@ import static org.lwjgl.input.Keyboard.*;
 
 import net.tundra.core.Game;
 import net.tundra.core.scene.Camera;
+import net.tundra.core.scene.PhysicsObject;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
 public class FPSCamera extends Camera {
   private float pitch = 0, yaw = 0;
+  private PhysicsObject tracking;
+  private boolean jumping = false;
 
-  public FPSCamera(Vector3f position) {
+  public FPSCamera(PhysicsObject target) {
     super();
-    setPosition(position);
+    tracking = target;
+    setPosition(target.getPosition());
   }
 
   public void update(Game game, int delta) {
@@ -24,19 +28,25 @@ public class FPSCamera extends Camera {
     if (game.getInput().isKeyDown(KEY_S)) velocity.sub(getForward());
     if (game.getInput().isKeyDown(KEY_D)) velocity.add(getRight());
     if (game.getInput().isKeyDown(KEY_A)) velocity.sub(getRight());
+    if (game.getInput().isKeyPressed(KEY_SPACE) && !jumping) {
+      tracking.getBody().applyCentralImpulse(new javax.vecmath.Vector3f(0, 5f, 0));
+      jumping = true;
+      game.after(
+          2000,
+          () -> {
+            jumping = false;
+          });
+    }
 
     if (velocity.length() != 0) {
       velocity.normalize();
-      setPosition(getPosition().add(velocity.mul(0.01f * delta)));
+      velocity.mul(20f);
+      tracking
+          .getBody()
+          .applyCentralForce(new javax.vecmath.Vector3f(velocity.x, velocity.y, velocity.z));
     }
 
-    if (getPosition().x > 19.5f) setPosition(new Vector3f(19.5f, getPosition().y, getPosition().z));
-    if (getPosition().x < -19.5f)
-      setPosition(new Vector3f(-19.5f, getPosition().y, getPosition().z));
-    if (getPosition().z > 19.5f) setPosition(new Vector3f(getPosition().x, getPosition().y, 19.5f));
-    if (getPosition().z < -19.5f)
-      setPosition(new Vector3f(getPosition().x, getPosition().y, -19.5f));
-
+    setPosition(tracking.getPosition());
     setTarget(
         new Matrix3f()
             .rotate(yaw, new Vector3f(0, 1, 0))

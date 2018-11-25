@@ -9,14 +9,14 @@ import org.joml.Vector3f;
 
 public abstract class Light extends SceneComponent implements Trackable {
   private Vector3f position = new Vector3f(0, 0, 0);
+  private Vector3f direction = new Vector3f(0, 0, 0);
   private Vector3f colour = new Vector3f(0, 0, 0);
 
   private float constant = 1f;
   private float linear = 1f;
   private float quadratic = 1f;
 
-  private boolean active = true;
-  private boolean shadowMapped = false;
+  private boolean active = true, shadowMapped = false, directional = false;
 
   public Light() {}
 
@@ -56,7 +56,7 @@ public abstract class Light extends SceneComponent implements Trackable {
 
   @Override
   public Vector3f getPosition() {
-    return position;
+    return new Vector3f(position);
   }
 
   public void setPosition(Vector3f position) {
@@ -89,6 +89,23 @@ public abstract class Light extends SceneComponent implements Trackable {
 
   public boolean shadowMapped() {
     return shadowMapped;
+  }
+
+  public boolean directional() {
+    return directional;
+  }
+
+  public void setDirectional(Vector3f direction) {
+    this.direction = direction;
+    directional = true;
+  }
+
+  public void setUndirectional() {
+    directional = false;
+  }
+
+  public Vector3f getDirection() {
+    return new Vector3f(direction);
   }
 
   public abstract void update(Game game, int delta);

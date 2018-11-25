@@ -97,6 +97,7 @@ public class Program {
 
   public void uniform(String name, Light value) throws TundraException {
     uniform(name + ".pos", value.getPosition());
+    uniform(name + ".dir", value.getDirection());
     uniform(name + ".col", value.getColour());
     uniform(name + ".constant", value.getConstant());
     uniform(name + ".linear", value.getLinear());
@@ -104,6 +105,7 @@ public class Program {
     uniform(name + ".quadratic", value.getQuadratic());
     uniform(name + ".on", value.active());
     uniform(name + ".shadow_mapped", value.shadowMapped());
+    uniform(name + ".directional", value.directional());
   }
 
   public void attrib(String name, int size) throws TundraException {

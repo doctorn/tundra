@@ -2,6 +2,15 @@ package net.tundra.core;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import com.bulletphysics.collision.broadphase.BroadphaseInterface;
+import com.bulletphysics.collision.broadphase.DbvtBroadphase;
+import com.bulletphysics.collision.dispatch.CollisionConfiguration;
+import com.bulletphysics.collision.dispatch.CollisionDispatcher;
+import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
+import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
+import com.bulletphysics.dynamics.DynamicsWorld;
+import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
+import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +19,9 @@ import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.Event;
 import net.tundra.core.scene.GameObject;
 import net.tundra.core.scene.Light;
+import net.tundra.core.scene.PhysicsObject;
 import net.tundra.core.scene.SceneComponent;
+import org.joml.Vector3f;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -19,7 +30,11 @@ public abstract class Game {
   private Input input;
   private int width, height;
   private String title;
-  private boolean fullscreen, debug = false, lighting = true, shadowMapping = false;
+  private boolean fullscreen,
+      debug = false,
+      lighting = true,
+      shadowMapping = false,
+      physics = false;
   private Graphics graphics;
   private List<Light> lights = new ArrayList<>();
   private List<Camera> cameras = new ArrayList<>();
@@ -27,6 +42,7 @@ public abstract class Game {
   private List<Event> events = new ArrayList<>();
   private Camera active, shadowCamera;
   private Light shadowLight;
+  private DynamicsWorld dynamics;
 
   private int fps = 0, frameCount = 0, cumulativeDelta = 0;
 
@@ -46,12 +62,21 @@ public abstract class Game {
       Display.create();
       graphics = new Graphics(this);
       input = new Input();
+      initPhysics();
       init();
     } catch (LWJGLException e) {
       throw new TundraException("Failed to initialise game window", e);
     }
 
     loop();
+  }
+
+  public void initPhysics() {
+    BroadphaseInterface broadphase = new DbvtBroadphase();
+    CollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
+    CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
+    ConstraintSolver solver = new SequentialImpulseConstraintSolver();
+    dynamics = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
   }
 
   public void loop() throws TundraException {
@@ -68,6 +93,7 @@ public abstract class Game {
       }
       input.update();
 
+      if (physics) dynamics.stepSimulation((float) delta / 1000f);
       for (GameObject object : objects) object.update(this, delta);
       for (Light light : lights) light.update(this, delta);
       for (Camera camera : cameras) camera.update(this, delta);
@@ -151,6 +177,14 @@ public abstract class Game {
 
   public void addObject(GameObject object) {
     objects.add(object);
+    if (object instanceof PhysicsObject) {
+      PhysicsObject physicsObject = (PhysicsObject) object;
+      dynamics.addRigidBody(physicsObject.getBody());
+    }
+  }
+
+  public void togglePhysics() {
+    physics = !physics;
   }
 
   public void toggleDebug() {
@@ -189,10 +223,21 @@ public abstract class Game {
     return active;
   }
 
+  public void setGravity(Vector3f gravity) {
+    dynamics.setGravity(new javax.vecmath.Vector3f(gravity.x, gravity.y, gravity.z));
+  }
+
   private void cleanup(List<? extends SceneComponent> components) {
     Iterator<? extends SceneComponent> it = components.iterator();
     while (it.hasNext()) {
-      if (it.next().dying()) it.remove();
+      SceneComponent next = it.next();
+      if (next.dying()) {
+        it.remove();
+        if (next instanceof PhysicsObject) {
+          PhysicsObject physicsObject = (PhysicsObject) next;
+          dynamics.removeRigidBody(physicsObject.getBody());
+        }
+      }
     }
   }
 

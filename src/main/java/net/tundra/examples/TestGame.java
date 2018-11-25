@@ -33,8 +33,7 @@ public class TestGame extends Game {
     addCamera(camera2);
     activate(camera);
 
-    FixedLight main = new FixedLight(50, 50, 50, 0.4f, 0.4f, 0.4f);
-    main.setDirectional(new Vector3f(-1, -1, -1).normalize());
+    FixedLight main = new FixedLight(new Vector3f(-1f, -1f, -1f), new Vector3f(0.2f, 0.2f, 0.2f));
     addLight(new FixedLight(4, 0, 0, 0, 0, 1));
     addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
     addLight(main);

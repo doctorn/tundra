@@ -29,6 +29,12 @@ public abstract class Light extends SceneComponent implements Trackable {
     quadratic = 0.0075f;
   }
 
+  public Light(Vector3f direction, Vector3f colour) {
+    directional = true;
+    this.direction = direction;
+    this.colour = colour;
+  }
+
   public Light(Vector3f position, Vector3f colour, float constant, float linear, float quadratic) {
     this.position = position;
     this.colour = colour;

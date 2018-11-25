@@ -12,6 +12,10 @@ public final class FixedLight extends Light {
     super(x, y, z, r, g, b);
   }
 
+  public FixedLight(Vector3f direction, Vector3f colour) {
+    super(direction, colour);
+  }
+
   public FixedLight(
       Vector3f position, Vector3f colour, float constant, float linear, float quadratic) {
     super(position, colour, constant, linear, quadratic);

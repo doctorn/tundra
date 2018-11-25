@@ -32,8 +32,8 @@ public class TestGame extends Game {
     active = camera2;
 
     FixedLight main = new FixedLight(19, 3, 19, 1, 1, 1);
-    // addLight(new FixedLight(4, 0, 0, 0, 0, 1));
-    // addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
+    addLight(new FixedLight(4, 0, 0, 0, 0, 1));
+    addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
     addLight(main);
     android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();
@@ -59,6 +59,7 @@ public class TestGame extends Game {
       else active = camera;
     }
 
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_V)) active.togglePerspective();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_T)) toggleDebug();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_L)) toggleLighting();
 
@@ -72,7 +73,12 @@ public class TestGame extends Game {
   public void render(Graphics g) throws TundraException {
     g.use(active);
     for (int i = -5; i < 5; i++) {
-      Matrix4f transform = new Matrix4f().translate(new Vector3f(i, -3.5f, -2)).scale(0.5f);
+      Vector3f position = new Vector3f(i, -3.5f, -2);
+      Matrix4f transform =
+          new Matrix4f()
+              .translate(position)
+              .scale(0.5f)
+              .lookAlong(active.getLookAlong(), active.getUp());
       g.drawModel(Model.PLANE, android.currentFrame(), transform);
     }
 

@@ -85,6 +85,11 @@ public abstract class Camera extends SceneComponent implements Trackable {
     return getTarget().sub(position).normalize();
   }
 
+  public Vector3f getLookAlong() {
+    Vector3f look = getLook();
+    return new Vector3f(-look.x, 0f, look.z);
+  }
+
   public void renderDebug(Game game, Graphics graphics) throws TundraException {
     graphics.drawModelWireframe(Model.CUBE, new Matrix4f().translate(position).scale(0.2f));
   }

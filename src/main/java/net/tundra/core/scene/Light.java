@@ -1,10 +1,5 @@
 package net.tundra.core.scene;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.*;
-
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.graphics.Graphics;

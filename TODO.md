@@ -1,14 +1,17 @@
+### Resources
+
 - [ ] Audio
-- [ ] Directional lights
-- [ ] Spot lights
 - [ ] .obj loading
+
+### Engine Interface
+
 - [ ] GameState system
 - [ ] Particle system
 - [ ] Engine callbacks
+- [ ] ODE4J integration
 
-- [ ] JBox integration/ODE4J integration
+### Lighting
 
-- [x] Shadow mapping (kind of)
-- [x] Framebuffers (kind of)
-- [x] Re-structure rendering pipeline
-- [x] GameObject management
+- [ ] Bloom
+- [ ] Directional lights
+- [ ] Spot lights

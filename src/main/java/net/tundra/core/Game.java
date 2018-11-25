@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import net.tundra.core.graphics.Graphics;
 import net.tundra.core.scene.Camera;
+import net.tundra.core.scene.Event;
 import net.tundra.core.scene.GameObject;
 import net.tundra.core.scene.Light;
 import net.tundra.core.scene.SceneComponent;
@@ -23,6 +24,7 @@ public abstract class Game {
   private List<Light> lights = new ArrayList<>();
   private List<Camera> cameras = new ArrayList<>();
   private List<GameObject> objects = new ArrayList<>();
+  private List<Event> events = new ArrayList<>();
   private Camera shadowCamera;
   private Light shadowLight;
 
@@ -69,12 +71,14 @@ public abstract class Game {
       for (GameObject object : objects) object.update(this, delta);
       for (Light light : lights) light.update(this, delta);
       for (Camera camera : cameras) camera.update(this, delta);
+      for (Event event : events) event.update(this, delta);
 
       update(delta);
 
       cleanup(objects);
       cleanup(lights);
       cleanup(cameras);
+      cleanup(events);
 
       for (GameObject object : objects) object.render(this, graphics);
       render(graphics);
@@ -163,6 +167,18 @@ public abstract class Game {
 
   public void setLighting(boolean lighting) {
     this.lighting = lighting;
+  }
+
+  public Event after(int timeout, Runnable action) {
+    Event event = new Event(action, timeout, false);
+    events.add(event);
+    return event;
+  }
+
+  public Event every(int timeout, Runnable action) {
+    Event event = new Event(action, timeout, true);
+    events.add(event);
+    return event;
   }
 
   private void cleanup(List<? extends SceneComponent> components) {

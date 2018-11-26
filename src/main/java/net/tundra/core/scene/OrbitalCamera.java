@@ -23,8 +23,16 @@ public class OrbitalCamera extends Camera {
     this.distance = distance;
   }
 
+  public void setDistance(float distance) {
+    this.distance = distance;
+  }
+
+  public float getDistance() {
+    return distance;
+  }
+
   @Override
-  public void update(Game game, int delta) {
+  public void update(Game game, float delta) {
     pitch += game.getInput().getMouseDY() / 100f;
     yaw += game.getInput().getMouseDX() / 100f;
     distance -= game.getInput().getDWheel() / 200f;

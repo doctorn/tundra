@@ -19,7 +19,7 @@ public class FPSCamera extends Camera {
     setPosition(target.getPosition());
   }
 
-  public void update(Game game, int delta) {
+  public void update(Game game, float delta) {
     pitch -= game.getInput().getMouseDY() / 100f;
     yaw -= game.getInput().getMouseDX() / 100f;
 

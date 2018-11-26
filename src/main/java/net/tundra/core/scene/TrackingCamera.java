@@ -14,7 +14,7 @@ public class TrackingCamera extends Camera {
   }
 
   @Override
-  public void update(Game game, int delta) {
+  public void update(Game game, float delta) {
     setPosition(tracked.getPosition().add(offset));
   }
 }

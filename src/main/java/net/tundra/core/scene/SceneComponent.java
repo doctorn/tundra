@@ -14,5 +14,7 @@ public abstract class SceneComponent {
     return dying;
   }
 
-  public abstract void update(Game game, int delta) throws TundraException;
+  public void die(Game game) {}
+
+  public abstract void update(Game game, float delta) throws TundraException;
 }

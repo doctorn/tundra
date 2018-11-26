@@ -5,6 +5,7 @@ import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
+import net.tundra.core.Game;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -37,6 +38,11 @@ public abstract class PhysicsObject extends GameObject implements Trackable {
     javax.vecmath.Quat4f rotation = new javax.vecmath.Quat4f();
     body.getMotionState().getWorldTransform(new Transform()).getRotation(rotation);
     return new Quaternionf(rotation.x, rotation.y, rotation.z, rotation.w);
+  }
+
+  @Override
+  public void die(Game game) {
+    game.getDynamicsWorld().removeRigidBody(body);
   }
 
   @Override

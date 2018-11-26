@@ -16,9 +16,9 @@ import org.joml.Vector3f;
 
 public class TestGame extends Game {
   private Animation android;
-  private Camera camera, camera2;
+  private OrbitalCamera camera;
+  private Camera camera2;
   private Font font;
-  float angle;
 
   public TestGame() {
     super(1920, 1080, "tundra", true);
@@ -47,7 +47,7 @@ public class TestGame extends Game {
     getInput().setMouseGrabbed(true);
 
     Camera shadow = new ShadowCamera();
-    shadow.setPosition(new Vector3f(50, 50, 50));
+    shadow.setPosition(new Vector3f(25, 25, 25));
     shadow.setTarget(new Vector3f(0, 0, 0));
     enableShadowMapping(shadow, main);
     addCamera(shadow);
@@ -63,12 +63,13 @@ public class TestGame extends Game {
               new Box(this, new Vector3f(5f + i * 0.41f, -4f + 0.41f + j * 0.4f, 5f + k * 0.4f)));
       }
     }
+
+    lerp(10000, f -> camera.setDistance(f), camera.getDistance(), 50f);
   }
 
   @Override
-  public void update(int delta) throws TundraException {
+  public void update(float delta) throws TundraException {
     android.update(delta);
-    angle += 0.001f * delta;
 
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_C)) {
       if (getCamera() == camera) activate(camera2);
@@ -79,6 +80,8 @@ public class TestGame extends Game {
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_T)) toggleDebug();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_L)) toggleLighting();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_P)) togglePhysics();
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_1)) setTimescale(0.1f);
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_2)) setTimescale(1f);
 
     if (getInput().isMouseButtonPressed(0))
       addObject(
@@ -99,6 +102,7 @@ public class TestGame extends Game {
 
     g.drawString(getFPS() + " FPS", font, 10, 10);
     g.drawString(getLights().size() + " LIGHTS", font, 10, 35);
+    g.drawString(camera.getDistance() + "", font, 10, 60);
   }
 
   public static void main(String args[]) throws TundraException {

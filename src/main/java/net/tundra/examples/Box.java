@@ -29,7 +29,7 @@ public class Box extends PhysicsObject {
   }
 
   @Override
-  public void update(Game game, int delta) throws TundraException {}
+  public void update(Game game, float delta) throws TundraException {}
 
   @Override
   public void render(Game game, Graphics graphics) throws TundraException {

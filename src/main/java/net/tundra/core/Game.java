@@ -14,10 +14,12 @@ import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSo
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 import net.tundra.core.graphics.Graphics;
 import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.Event;
 import net.tundra.core.scene.GameObject;
+import net.tundra.core.scene.Interpolator;
 import net.tundra.core.scene.Light;
 import net.tundra.core.scene.PhysicsObject;
 import net.tundra.core.scene.SceneComponent;
@@ -30,6 +32,7 @@ public abstract class Game {
   private Input input;
   private int width, height;
   private String title;
+  private float timescale = 1f;
   private boolean fullscreen,
       debug = false,
       lighting = true,
@@ -39,7 +42,7 @@ public abstract class Game {
   private List<Light> lights = new ArrayList<>();
   private List<Camera> cameras = new ArrayList<>();
   private List<GameObject> objects = new ArrayList<>();
-  private List<Event> events = new ArrayList<>();
+  private List<SceneComponent> events = new ArrayList<>();
   private Camera active, shadowCamera;
   private Light shadowLight;
   private DynamicsWorld dynamics;
@@ -91,21 +94,23 @@ public abstract class Game {
         fps = 10000 / cumulativeDelta;
         cumulativeDelta = 0;
       }
+
+      float realDelta = (float) delta * timescale;
+
       input.update();
-
-      if (physics) dynamics.stepSimulation((float) delta / 1000f);
-      for (GameObject object : objects) object.update(this, delta);
-      for (Light light : lights) light.update(this, delta);
-      for (Camera camera : cameras) camera.update(this, delta);
-      for (Event event : events) event.update(this, delta);
-
-      update(delta);
+      if (physics) dynamics.stepSimulation(realDelta / 1000f);
+      for (GameObject object : objects) object.update(this, realDelta);
+      for (Light light : lights) light.update(this, realDelta);
+      for (Camera camera : cameras) camera.update(this, realDelta);
+      for (SceneComponent event : events) event.update(this, realDelta);
+      update(realDelta);
 
       cleanup(objects);
       cleanup(lights);
       cleanup(cameras);
       cleanup(events);
 
+      graphics.setColour(new Vector3f(1f, 1f, 1f));
       for (GameObject object : objects) object.render(this, graphics);
       render(graphics);
       if (debug) {
@@ -215,6 +220,12 @@ public abstract class Game {
     return event;
   }
 
+  public Interpolator lerp(int timeout, Consumer<Float> action, float start, float end) {
+    Interpolator event = new Interpolator(action, start, end, timeout);
+    events.add(event);
+    return event;
+  }
+
   public void activate(Camera camera) {
     active = camera;
   }
@@ -227,23 +238,32 @@ public abstract class Game {
     dynamics.setGravity(new javax.vecmath.Vector3f(gravity.x, gravity.y, gravity.z));
   }
 
+  public void setTimescale(float timescale) {
+    this.timescale = timescale;
+  }
+
+  public float getTimescale() {
+    return timescale;
+  }
+
+  public DynamicsWorld getDynamicsWorld() {
+    return dynamics;
+  }
+
   private void cleanup(List<? extends SceneComponent> components) {
     Iterator<? extends SceneComponent> it = components.iterator();
     while (it.hasNext()) {
       SceneComponent next = it.next();
       if (next.dying()) {
+        next.die(this);
         it.remove();
-        if (next instanceof PhysicsObject) {
-          PhysicsObject physicsObject = (PhysicsObject) next;
-          dynamics.removeRigidBody(physicsObject.getBody());
-        }
       }
     }
   }
 
   public abstract void init() throws TundraException;
 
-  public abstract void update(int delta) throws TundraException;
+  public abstract void update(float delta) throws TundraException;
 
   public abstract void render(Graphics graphics) throws TundraException;
 }

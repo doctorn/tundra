@@ -4,7 +4,7 @@ import net.tundra.core.Game;
 
 public class Event extends SceneComponent {
   private Runnable action;
-  private int timeout, current;
+  private float timeout, current;
   private boolean repeating;
 
   public Event(Runnable action, int timeout, boolean repeating) {
@@ -15,7 +15,7 @@ public class Event extends SceneComponent {
   }
 
   @Override
-  public void update(Game game, int delta) {
+  public void update(Game game, float delta) {
     current -= delta;
     while (current < 0) {
       action.run();

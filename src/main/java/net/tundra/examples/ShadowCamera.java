@@ -4,10 +4,9 @@ import net.tundra.core.Game;
 import net.tundra.core.scene.Camera;
 import org.joml.Matrix4f;
 
-public final class ShadowCamera extends Camera {
+public class ShadowCamera extends Camera {
   public ShadowCamera() {
     super();
-    // togglePerspective();
   }
 
   @Override
@@ -18,5 +17,5 @@ public final class ShadowCamera extends Camera {
   }
 
   @Override
-  public void update(Game game, int delta) {}
+  public void update(Game game, float delta) {}
 }

@@ -35,7 +35,7 @@ public abstract class Camera extends SceneComponent implements Trackable {
           .lookAt(position, target, up);
     } else {
       return new Matrix4f()
-          .ortho(-(float) width / height, (float) width / height, -1, 1, 0.01f, 100f)
+          .ortho(-(float) width / height, (float) width / height, -1, 1, 0.01f, 500f)
           .lookAt(position, target, up);
     }
   }
@@ -91,8 +91,7 @@ public abstract class Camera extends SceneComponent implements Trackable {
   }
 
   public void renderDebug(Game game, Graphics graphics) throws TundraException {
+    graphics.setColour(new Vector3f(0.11f, 0.63f, 0.95f));
     graphics.drawModelWireframe(Model.CUBE, new Matrix4f().translate(position).scale(0.2f));
   }
-
-  public abstract void update(Game game, int delta);
 }

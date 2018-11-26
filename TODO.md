@@ -5,9 +5,12 @@
 
 ### Engine Interface
 
-- [ ] Graphics set colour
-- [ ] GameState system
+- [x] Graphics set colour
+- [x] Time dilation
+- [ ] Screenshake
+- [x] Linear interpolating
 - [ ] Particle system
+- [ ] GameState system
 - [ ] Coherent JBullet interface
 - [ ] Models as JBullet collision shapes
 
@@ -15,3 +18,7 @@
 
 - [ ] Bloom
 - [ ] Spot lights
+
+### Stretch Goals
+
+- [ ] SSAO

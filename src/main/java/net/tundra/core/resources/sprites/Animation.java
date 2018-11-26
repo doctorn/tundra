@@ -8,7 +8,7 @@ public class Animation {
   private boolean playing = false, stopping = false;
   private int stoppingAt;
 
-  private int time, currentTime = 0;
+  private float time, currentTime = 0;
   private int x, y;
   private int currentFrame = 0;
 
@@ -28,7 +28,7 @@ public class Animation {
     this.endX = endX;
     this.endY = endY;
     this.looping = looping;
-    time = (int) Math.floor(1000f / (float) frameRate);
+    time = (float) Math.floor(1000f / (float) frameRate);
   }
 
   public void start() {
@@ -82,7 +82,7 @@ public class Animation {
     return playing;
   }
 
-  public void update(int delta) {
+  public void update(float delta) {
     if (playing) {
       currentTime += delta;
       while (currentTime > time) {

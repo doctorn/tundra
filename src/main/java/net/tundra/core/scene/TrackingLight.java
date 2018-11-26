@@ -17,7 +17,7 @@ public class TrackingLight extends Light {
   }
 
   @Override
-  public void update(Game game, int delta) {
+  public void update(Game game, float delta) {
     setPosition(tracked.getPosition());
     if (tracked instanceof SceneComponent) {
       if (((SceneComponent) tracked).dying()) kill();

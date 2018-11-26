@@ -22,5 +22,5 @@ public final class FixedLight extends Light {
   }
 
   @Override
-  public void update(Game game, int delta) {}
+  public void update(Game game, float delta) {}
 }

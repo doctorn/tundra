@@ -3,12 +3,12 @@ package net.tundra.examples;
 import static org.lwjgl.input.Keyboard.*;
 
 import net.tundra.core.Game;
-import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.PhysicsObject;
+import net.tundra.core.scene.ShakableCamera;
 import org.joml.Matrix3f;
 import org.joml.Vector3f;
 
-public class FPSCamera extends Camera {
+public class FPSCamera extends ShakableCamera {
   private float pitch = 0, yaw = 0;
   private PhysicsObject tracking;
   private boolean jumping = false;
@@ -19,7 +19,9 @@ public class FPSCamera extends Camera {
     setPosition(target.getPosition());
   }
 
+  @Override
   public void update(Game game, float delta) {
+    super.update(game, delta);
     pitch -= game.getInput().getMouseDY() / 100f;
     yaw -= game.getInput().getMouseDX() / 100f;
 

@@ -7,8 +7,8 @@
 
 - [x] Graphics set colour
 - [x] Time dilation
-- [ ] Screenshake
 - [x] Linear interpolating
+- [x] Screenshake
 - [ ] Particle system
 - [ ] GameState system
 - [ ] Coherent JBullet interface

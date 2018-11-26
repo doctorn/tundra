@@ -29,6 +29,8 @@ public abstract class Camera extends SceneComponent implements Trackable {
   }
 
   public Matrix4f getViewProjectionMatrix(int width, int height) {
+    Vector3f position = getPosition();
+    Vector3f target = getTarget();
     if (perspective) {
       return new Matrix4f()
           .perspective((float) Math.toRadians(fov), (float) width / height, 0.01f, 100f)
@@ -73,6 +75,18 @@ public abstract class Camera extends SceneComponent implements Trackable {
     return new Vector3f(up);
   }
 
+  public Vector3f getScreenX() {
+    return getUp().cross(getScreenZ()).normalize();
+  }
+
+  public Vector3f getScreenY() {
+    return getScreenZ().cross(getScreenX());
+  }
+
+  public Vector3f getScreenZ() {
+    return getPosition().sub(getTarget()).normalize();
+  }
+
   public boolean perspectiveEnabled() {
     return perspective;
   }
@@ -92,6 +106,6 @@ public abstract class Camera extends SceneComponent implements Trackable {
 
   public void renderDebug(Game game, Graphics graphics) throws TundraException {
     graphics.setColour(new Vector3f(0.11f, 0.63f, 0.95f));
-    graphics.drawModelWireframe(Model.CUBE, new Matrix4f().translate(position).scale(0.2f));
+    graphics.drawModelWireframe(Model.CUBE, new Matrix4f().translate(getPosition()).scale(0.2f));
   }
 }

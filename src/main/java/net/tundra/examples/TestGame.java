@@ -17,7 +17,7 @@ import org.joml.Vector3f;
 public class TestGame extends Game {
   private Animation android;
   private OrbitalCamera camera;
-  private Camera camera2;
+  private FPSCamera camera2;
   private Font font;
 
   public TestGame() {
@@ -82,6 +82,7 @@ public class TestGame extends Game {
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_P)) togglePhysics();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_1)) setTimescale(0.1f);
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_2)) setTimescale(1f);
+    if (getInput().isKeyDown(org.lwjgl.input.Keyboard.KEY_3)) camera2.shake(100f);
 
     if (getInput().isMouseButtonPressed(0))
       addObject(

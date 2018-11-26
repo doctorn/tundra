@@ -9,6 +9,7 @@ in vec3 frag_pos_light_space;
 
 uniform vec3 cam_pos;
 
+uniform vec3 col;
 uniform bool texturing;
 uniform vec2 tex_start;
 uniform vec2 tex_size;
@@ -47,15 +48,15 @@ float shadow(vec3 normal, vec3 light_dir) {
   if (proj.z > 1.)
     return 0.;
   float current = proj.z;
-  float bias = 0.005 * tan(acos(abs(dot(normal, shadow_dir))));
-  bias = clamp(bias, 0, 0.01);
+  float bias = 0.0003 * tan(acos(abs(dot(normal, shadow_dir))));
+  bias = clamp(bias, 0, 0.001);
   float shadow = 0.0;
   vec2 size = 1.0 / textureSize(depth_map, 0);
   for(int i = -2; i < 2; i++) {
-      for(int j = -2; j < 2; j++) {
-          float depth = texture(depth_map, proj.xy + vec2(i, j) * size).r;
-          shadow += current - bias > depth ? 1.0 : 0.0;
-      }
+    for(int j = -2; j < 2; j++) {
+      float depth = texture(depth_map, proj.xy + vec2(i, j) * size).r;
+      shadow += current - bias > depth ? 1.0 : 0.0;
+    }
   }
   return shadow / 25.;
 }
@@ -66,7 +67,7 @@ void main() {
     if (colour.a != 1.0)
       discard;
   } else {
-    colour = vec4(1.);
+    colour = vec4(col, 1.);
   }
 
   if (lighting) {

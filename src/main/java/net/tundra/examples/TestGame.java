@@ -1,5 +1,6 @@
 package net.tundra.examples;
 
+import com.bulletphysics.collision.dispatch.CollisionObject;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.graphics.Graphics;
@@ -25,7 +26,8 @@ public class TestGame extends Game {
 
   @Override
   public void init() throws TundraException {
-    Box player = new Box(this, new Vector3f(0, 0, 0));
+    Box player = new Box(this, new Vector3f(0, -2f, 0), new Vector3f(1f, 0f, 1f));
+    player.getBody().setActivationState(CollisionObject.DISABLE_DEACTIVATION);
     addObject(player);
     camera = new OrbitalCamera(player, 10f);
     camera2 = new FPSCamera(player);
@@ -50,7 +52,6 @@ public class TestGame extends Game {
     enableShadowMapping(shadow, main);
     addCamera(shadow);
 
-    togglePhysics();
     setGravity(new Vector3f(0, -10, 0));
 
     addObject(new Floor());
@@ -58,7 +59,8 @@ public class TestGame extends Game {
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         for (int k = 0; k < 8; k++)
-          addObject(new Box(this, new Vector3f(5f + i * 2.1f, -4f + 0.1f + j * 2f, 5f + k * 2f)));
+          addObject(
+              new Box(this, new Vector3f(5f + i * 0.41f, -4f + 0.41f + j * 0.4f, 5f + k * 0.4f)));
       }
     }
   }
@@ -76,6 +78,7 @@ public class TestGame extends Game {
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_V)) getCamera().togglePerspective();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_T)) toggleDebug();
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_L)) toggleLighting();
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_P)) togglePhysics();
 
     if (getInput().isMouseButtonPressed(0))
       addObject(

@@ -13,7 +13,7 @@ public final class ShadowCamera extends Camera {
   @Override
   public Matrix4f getViewProjectionMatrix(int width, int height) {
     return new Matrix4f()
-        .ortho(-10f, 10f, -10f, 10f, 0.01f, 100f)
+        .ortho(-20f, 20f, -20f, 20f, 0.01f, 100f)
         .lookAt(getPosition(), getTarget(), getUp());
   }
 

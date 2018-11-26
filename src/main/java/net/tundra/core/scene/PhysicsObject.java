@@ -23,6 +23,9 @@ public abstract class PhysicsObject extends GameObject implements Trackable {
     shape.calculateLocalInertia(mass, inertia);
     RigidBodyConstructionInfo constructionInfo =
         new RigidBodyConstructionInfo(mass, motionState, shape, inertia);
+    constructionInfo.linearDamping = 0.2f;
+    constructionInfo.friction = 0.5f;
+    constructionInfo.angularDamping = 0.2f;
     body = new RigidBody(constructionInfo);
   }
 

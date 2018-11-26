@@ -27,12 +27,13 @@ import org.lwjgl.BufferUtils;
 public class Graphics {
   private static final Camera INTERFACE_CAMERA = new InterfaceCamera();
   private static final int MAX_LIGHTS = 64;
-  public static final int SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
+  public static final int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
 
   private Game game;
   private Program program, shadows;
   private List<Draw> scene = new ArrayList<>();
   private List<Draw> external = new ArrayList<>();
+  private Vector3f colour = new Vector3f(1f, 1f, 1f);
 
   private int depthBuffer, depthMap;
 
@@ -83,8 +84,12 @@ public class Graphics {
     glClearColor(colour.x, colour.y, colour.z, 1.0f);
   }
 
+  public void setColour(Vector3f colour) {
+    this.colour = new Vector3f(colour);
+  }
+
   public void drawModelWireframe(Model model, Matrix4f transform) throws TundraException {
-    scene.add(new Draw(false, true, model, null, transform));
+    scene.add(new Draw(false, true, model, null, transform, colour));
   }
 
   public void drawModel(Model model, Matrix4f transform) throws TundraException {
@@ -92,7 +97,7 @@ public class Graphics {
   }
 
   public void drawModel(Model model, Sprite texture, Matrix4f transform) throws TundraException {
-    scene.add(new Draw(game.lightingEnabled(), false, model, texture, transform));
+    scene.add(new Draw(game.lightingEnabled(), false, model, texture, transform, colour));
   }
 
   public void drawString(String string, Font font, int x, int y) throws TundraException {
@@ -110,7 +115,8 @@ public class Graphics {
             new Matrix4f()
                 .translate(x, game.getHeight() - y, 0)
                 .scale(sprite.getWidth() / 2f, sprite.getHeight() / 2f, 1)
-                .translate(1, -1, 0)));
+                .translate(1, -1, 0),
+            colour));
   }
 
   public void render() throws TundraException {
@@ -169,14 +175,21 @@ public class Graphics {
     private Model model;
     private Matrix4f transform;
     private Sprite texture;
+    private Vector3f colour;
 
     public Draw(
-        boolean lighting, boolean wireframe, Model model, Sprite texture, Matrix4f transform) {
+        boolean lighting,
+        boolean wireframe,
+        Model model,
+        Sprite texture,
+        Matrix4f transform,
+        Vector3f colour) {
       this.lighting = lighting;
       this.wireframe = wireframe;
       this.model = model;
       this.transform = transform;
       this.texture = texture;
+      this.colour = colour;
     }
 
     public void shadowMap() throws TundraException {
@@ -218,6 +231,7 @@ public class Graphics {
         glDisable(GL_CULL_FACE);
       }
 
+      program.uniform("col", colour);
       program.uniform(
           "mvp_matrix",
           camera.getViewProjectionMatrix(game.getWidth(), game.getHeight()).mul(transform));

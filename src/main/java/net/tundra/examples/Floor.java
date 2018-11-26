@@ -20,6 +20,7 @@ public class Floor extends PhysicsObject {
 
   @Override
   public void render(Game game, Graphics graphics) throws TundraException {
+    graphics.setColour(new Vector3f(1f, 1f, 1f));
     graphics.drawModel(
         Model.PLANE,
         new Matrix4f()

@@ -116,6 +116,9 @@ public abstract class Game {
       if (debug) {
         for (Light light : lights) light.renderDebug(this, graphics);
         for (Camera camera : cameras) camera.renderDebug(this, graphics);
+        for (GameObject object : objects) {
+          if (object instanceof PhysicsObject) ((PhysicsObject) object).renderDebug(this, graphics);
+        }
       }
       graphics.render();
 

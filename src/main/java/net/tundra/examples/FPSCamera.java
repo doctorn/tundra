@@ -12,11 +12,20 @@ public class FPSCamera extends ShakableCamera {
   private float pitch = 0, yaw = 0;
   private PhysicsObject tracking;
   private boolean jumping = false;
+  private Vector3f offset;
 
   public FPSCamera(PhysicsObject target) {
     super();
     tracking = target;
+    offset = new Vector3f();
     setPosition(target.getPosition());
+  }
+
+  public FPSCamera(PhysicsObject target, Vector3f offset) {
+    super();
+    tracking = target;
+    this.offset = new Vector3f(offset);
+    setPosition(target.getPosition().add(offset));
   }
 
   @Override
@@ -48,13 +57,13 @@ public class FPSCamera extends ShakableCamera {
           .applyCentralForce(new javax.vecmath.Vector3f(velocity.x, velocity.y, velocity.z));
     }
 
-    setPosition(tracking.getPosition());
+    setPosition(tracking.getPosition().add(offset));
     setTarget(
         new Matrix3f()
             .rotate(yaw, new Vector3f(0, 1, 0))
             .rotate(pitch, new Vector3f(1, 0, 0))
             .transform(new Vector3f(0, 0, 1))
-            .add(getPosition()));
+            .add(getPosition().add(offset)));
   }
 
   private Vector3f getForward() {

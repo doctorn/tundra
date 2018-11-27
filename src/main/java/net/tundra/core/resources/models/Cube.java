@@ -1,5 +1,7 @@
 package net.tundra.core.resources.models;
 
+import com.bulletphysics.collision.shapes.BoxShape;
+import com.bulletphysics.collision.shapes.CollisionShape;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
@@ -114,5 +116,10 @@ public class Cube extends Model {
             })
         .flip();
     return indices;
+  }
+
+  @Override
+  public CollisionShape getCollisionShape() {
+    return new BoxShape(new javax.vecmath.Vector3f(1f, 1f, 1f));
   }
 }

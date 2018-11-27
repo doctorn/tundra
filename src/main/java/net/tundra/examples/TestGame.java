@@ -11,7 +11,6 @@ import net.tundra.core.resources.sprites.SpriteSheet;
 import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.FixedLight;
 import net.tundra.core.scene.OrbitalCamera;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class TestGame extends Game {
@@ -19,6 +18,7 @@ public class TestGame extends Game {
   private OrbitalCamera camera;
   private FPSCamera camera2;
   private Font font;
+  public static Model MONKEY, DODGE;
 
   public TestGame() {
     super(1920, 1080, "tundra", true);
@@ -26,11 +26,16 @@ public class TestGame extends Game {
 
   @Override
   public void init() throws TundraException {
+    MONKEY = new Model("res/suzanne.obj");
+    DODGE = new Model("res/dodge.obj");
+    toggleDebug();
+
     Box player = new Box(this, new Vector3f(0, -2f, 0), new Vector3f(1f, 0f, 1f));
     player.getBody().setActivationState(CollisionObject.DISABLE_DEACTIVATION);
     addObject(player);
     camera = new OrbitalCamera(player, 10f);
-    camera2 = new FPSCamera(player);
+    camera = new OrbitalCamera(player, 10f);
+    camera2 = new FPSCamera(player, new Vector3f(-0.06f, 0.06f, 0));
     addCamera(camera);
     addCamera(camera2);
     activate(camera);
@@ -46,9 +51,7 @@ public class TestGame extends Game {
     font = new Font(fontSheet);
     getInput().setMouseGrabbed(true);
 
-    Camera shadow = new ShadowCamera();
-    shadow.setPosition(new Vector3f(25, 25, 25));
-    shadow.setTarget(new Vector3f(0, 0, 0));
+    Camera shadow = new ShadowCamera(player, new Vector3f(25, 25, 25));
     enableShadowMapping(shadow, main);
     addCamera(shadow);
 
@@ -64,7 +67,9 @@ public class TestGame extends Game {
       }
     }
 
-    lerp(10000, f -> camera.setDistance(f), camera.getDistance(), 50f);
+    // Interpolator lerping = lerp(10000, f -> camera.setDistance(f), camera.getDistance(), 50f);
+    // every(1000, () -> toggleLighting());
+    // after(2000, () -> lerping.kill());
   }
 
   @Override
@@ -91,7 +96,7 @@ public class TestGame extends Game {
 
   @Override
   public void render(Graphics g) throws TundraException {
-    for (int i = -5; i < 5; i++) {
+    /* for (int i = -5; i < 5; i++) {
       Vector3f position = new Vector3f(i, -3.5f, -2);
       Matrix4f transform =
           new Matrix4f()
@@ -99,11 +104,12 @@ public class TestGame extends Game {
               .scale(0.5f)
               .lookAlong(getCamera().getLookAlong(), getCamera().getUp());
       g.drawModel(Model.PLANE, android.currentFrame(), transform);
-    }
+    }*/
+
+    g.setColour(new Vector3f(1f, 1f, 1f));
 
     g.drawString(getFPS() + " FPS", font, 10, 10);
     g.drawString(getLights().size() + " LIGHTS", font, 10, 35);
-    g.drawString(camera.getDistance() + "", font, 10, 60);
   }
 
   public static void main(String args[]) throws TundraException {

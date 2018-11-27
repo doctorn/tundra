@@ -1,5 +1,7 @@
 package net.tundra.core.resources.models;
 
+import com.bulletphysics.collision.shapes.CollisionShape;
+import com.bulletphysics.collision.shapes.StaticPlaneShape;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
@@ -61,5 +63,10 @@ public class Plane extends Model {
             })
         .flip();
     return indices;
+  }
+
+  @Override
+  public CollisionShape getCollisionShape() {
+    return new StaticPlaneShape(new javax.vecmath.Vector3f(0, 0, 1f), 0);
   }
 }

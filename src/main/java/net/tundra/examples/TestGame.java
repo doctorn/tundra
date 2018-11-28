@@ -3,6 +3,9 @@ package net.tundra.examples;
 import com.bulletphysics.collision.dispatch.CollisionObject;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
+import net.tundra.core.audio.Listener;
+import net.tundra.core.audio.Sound;
+import net.tundra.core.audio.TrackingListener;
 import net.tundra.core.graphics.Graphics;
 import net.tundra.core.resources.models.Model;
 import net.tundra.core.resources.sprites.Animation;
@@ -19,11 +22,13 @@ public class TestGame extends Game {
   private Animation android;
   private OrbitalCamera camera;
   private FPSCamera camera2;
+  private Listener listener1;
+  private TrackingListener trackingListener;
   private Font font;
   public static Model MONKEY, DODGE, DREDD;
 
   public TestGame() {
-    super(1920, 1080, "tundra", true);
+    super(1920, 1080, "tundra", false);
   }
 
   @Override
@@ -41,6 +46,12 @@ public class TestGame extends Game {
     addCamera(camera);
     addCamera(camera2);
     activate(camera);
+
+    listener1 = new Listener(new Vector3f(0,0,0), 1);
+    addListener(listener1);
+    activateListener(listener1);
+    trackingListener = new TrackingListener(1, camera, new Vector3f(0,0,0));
+    addListener(trackingListener);
 
     FixedLight main = new FixedLight(new Vector3f(-1f, -1f, -1f), new Vector3f(0.2f, 0.2f, 0.2f));
     addLight(new FixedLight(4, 0, 0, 0, 0, 1));
@@ -92,6 +103,25 @@ public class TestGame extends Game {
     if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_2)) setTimescale(1f);
     if (getInput().isKeyDown(org.lwjgl.input.Keyboard.KEY_3)) camera2.shake(100f);
 
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_M)) {
+      Sound sound = new Sound("res/beep.wav");
+      addSound(sound);
+      after(1000, sound::kill);
+      sound.play();
+    }
+
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_N)) {
+      Sound sound = new Sound("res/beep.wav", new Vector3f(-5, 0, 1), new Vector3f(1,0,0), 1, 0.05f, true);
+      lerp(1000, t -> sound.setPosition(new Vector3f(t, 0, 0)), -5, 5);
+      after(2000, sound::kill);
+      addSound(sound);
+      sound.play();
+    }
+
+    if (getInput().isKeyPressed(org.lwjgl.input.Keyboard.KEY_COMMA)) {
+      activateListener(getListener() == listener1 ? trackingListener : listener1);
+    }
+
     if (getInput().isMouseButtonPressed(0))
       addObject(
           new Box(this, camera2.getPosition().add(camera2.getLook().mul(0.5f)), camera2.getLook()));
@@ -113,8 +143,8 @@ public class TestGame extends Game {
 
     g.setColour(new Vector3f(1f, 1f, 1f));
 
-    g.drawString(getFPS() + " FPS", font, 10, 10);
-    g.drawString(getLights().size() + " LIGHTS", font, 10, 35);
+    g.drawString(getFPS() + " FPS", font, 10, 100);
+    g.drawString(getLights().size() + " LIGHTS", font, 10, 135);
   }
 
   public static void main(String args[]) throws TundraException {

@@ -54,6 +54,10 @@ public class Sprite {
     return scaled;
   }
 
+  public void enableSmoothing() {
+    sheet.enableSmoothing();
+  }
+
   public Vector2f getStartVector() {
     return new Vector2f(
         (float) coordX * sheet.getSpriteWidth() / sheet.getWidth(),

@@ -48,6 +48,7 @@ public class Material {
 
   public void setDiffuseMap(Sprite sprite) {
     diffuseMap = sprite;
+    diffuseMap.enableSmoothing();
     mappedDiffuse = true;
   }
 
@@ -70,6 +71,7 @@ public class Material {
 
   public void setSpecularMap(Sprite sprite) {
     specularMap = sprite;
+    specularMap.enableSmoothing();
     mappedSpecular = true;
   }
 
@@ -92,6 +94,7 @@ public class Material {
 
   public void setAmbientMap(Sprite sprite) {
     ambientMap = sprite;
+    ambientMap.enableSmoothing();
     mappedAmbient = true;
   }
 
@@ -114,6 +117,7 @@ public class Material {
 
   public void setHighlightMap(Sprite sprite) {
     highlightMap = sprite;
+    highlightMap.enableSmoothing();
     mappedHighlights = true;
   }
 
@@ -153,6 +157,7 @@ public class Material {
 
   public void setBumpMap(Sprite bumpMap, float bumpParam) {
     this.bumpMap = bumpMap;
+    bumpMap.enableSmoothing();
     bumpMapped = true;
     this.bumpParam = bumpParam;
   }

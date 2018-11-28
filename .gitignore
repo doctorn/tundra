@@ -20,6 +20,7 @@
 hs_err_pid*
 
 target/
+res/
 
 core.iml
 

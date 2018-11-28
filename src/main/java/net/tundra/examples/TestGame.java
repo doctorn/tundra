@@ -14,6 +14,7 @@ import net.tundra.core.scene.OrbitalCamera;
 import net.tundra.core.scene.TrackingLight;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class TestGame extends Game {
   private Animation android;
@@ -29,8 +30,8 @@ public class TestGame extends Game {
   @Override
   public void init() throws TundraException {
     MONKEY = new Model("res/suzanne.obj");
-    DODGE = new Model("res/dodge-challenger_model.obj");
-    DREDD = new Model("res/dredd.obj");
+    // DODGE = new Model("res/dodge-challenger_model.obj");
+    // DREDD = new Model("res/dredd.obj");
     toggleDebug();
 
     Box player = new Box(this, new Vector3f(0, -3.5f, 0), new Vector3f(1f, 0f, 1f));
@@ -109,7 +110,9 @@ public class TestGame extends Game {
       g.drawModel(Model.PLANE, android.currentFrame(), transform);
     }
 
-    g.drawModel(DREDD, new Matrix4f().translate(new Vector3f(-5f, 0, 5f)));
+    // g.drawModel(DREDD, new Matrix4f().translate(new Vector3f(-5f, 0, 5f)));
+    g.setColour(new Vector4f(0f, 0f, 0f, 0.5f));
+    g.fillRect(0, 0, getWidth() / 2, getHeight() / 2);
 
     g.setColour(new Vector3f(1f, 1f, 1f));
 

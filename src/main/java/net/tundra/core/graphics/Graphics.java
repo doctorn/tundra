@@ -23,6 +23,7 @@ import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.InterfaceCamera;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
 public class Graphics {
@@ -34,7 +35,7 @@ public class Graphics {
   private Program program, shadows;
   private List<Draw> scene = new ArrayList<>();
   private List<Draw> external = new ArrayList<>();
-  private Vector3f colour = new Vector3f(1f, 1f, 1f);
+  private Vector4f colour = new Vector4f(1f, 1f, 1f, 1f);
 
   private int depthBuffer, depthMap;
 
@@ -45,6 +46,8 @@ public class Graphics {
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glEnable(GL_FRAMEBUFFER_SRGB);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     VertexShader vertex = new VertexShader("shaders/vert.glsl");
     FragmentShader fragment = new FragmentShader("shaders/frag.glsl");
@@ -86,7 +89,11 @@ public class Graphics {
   }
 
   public void setColour(Vector3f colour) {
-    this.colour = new Vector3f(colour);
+    this.colour = new Vector4f(colour.x, colour.y, colour.z, 1f);
+  }
+
+  public void setColour(Vector4f colour) {
+    this.colour = colour;
   }
 
   public void drawModelWireframe(Model model, Matrix4f transform) throws TundraException {
@@ -116,6 +123,34 @@ public class Graphics {
             new Matrix4f()
                 .translate(x, game.getHeight() - y, 0)
                 .scale(sprite.getWidth() / 2f, sprite.getHeight() / 2f, 1)
+                .translate(1, -1, 0),
+            colour));
+  }
+
+  public void drawRect(int x, int y, int width, int height) throws TundraException {
+    external.add(
+        new Draw(
+            false,
+            true,
+            Model.PLANE,
+            null,
+            new Matrix4f()
+                .translate(x, game.getHeight() - y, 0)
+                .scale(width / 2f, height / 2f, 1f)
+                .translate(1, -1, 0),
+            colour));
+  }
+
+  public void fillRect(int x, int y, int width, int height) throws TundraException {
+    external.add(
+        new Draw(
+            false,
+            false,
+            Model.PLANE,
+            null,
+            new Matrix4f()
+                .translate(x, game.getHeight() - y, 0)
+                .scale(width / 2f, height / 2f, 1f)
                 .translate(1, -1, 0),
             colour));
   }
@@ -174,7 +209,7 @@ public class Graphics {
     private Model model;
     private Matrix4f transform;
     private Sprite texture;
-    private Vector3f colour;
+    private Vector4f colour;
 
     public Draw(
         boolean lighting,
@@ -182,7 +217,7 @@ public class Graphics {
         Model model,
         Sprite texture,
         Matrix4f transform,
-        Vector3f colour) {
+        Vector4f colour) {
       this.lighting = lighting;
       this.wireframe = wireframe;
       this.model = model;

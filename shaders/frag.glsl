@@ -13,7 +13,7 @@ flat in int frag_material;
 
 uniform vec3 cam_pos;
 
-uniform vec3 col;
+uniform vec4 col;
 uniform bool texturing;
 uniform vec2 tex_start;
 uniform vec2 tex_size;
@@ -126,8 +126,8 @@ void main() {
     highlight = DEFAULT_HIGHLIGHT;
   } else {
     amb_col = vec3(1.);
-    diff_col = col;
-    spec_col = col; 
+    diff_col = col.rgb;
+    spec_col = col.rgb; 
     highlight = DEFAULT_HIGHLIGHT;
   }
 
@@ -170,4 +170,5 @@ void main() {
     
   float gamma = 2.2;
   colour = vec4(pow(colour.rgb, vec3(1. / gamma)), 1.);
+  if (!materialed && !lighting && !texturing) colour.a = col.a;
 }

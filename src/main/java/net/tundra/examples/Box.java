@@ -49,7 +49,7 @@ public class Box extends PhysicsObject {
     if (directional) {
       graphics.setColour(new Vector3f(0.2f, 0.2f, 0.2f));
       graphics.drawModel(
-          /* Model.CUBE */ TestGame.DODGE,
+          /* Model.CUBE */ TestGame.MONKEY,
           new Matrix4f().translate(getPosition()).scale(0.2f).rotate(getRotation()));
     } else {
       graphics.setColour(new Vector3f(0.8f, 0.8f, 0.8f));

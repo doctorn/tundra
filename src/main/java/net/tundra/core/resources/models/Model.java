@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import net.tundra.core.TundraException;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -22,8 +24,16 @@ import org.lwjgl.BufferUtils;
 
 public class Model {
   public static final Model PLANE = new Plane(), CUBE = new Cube(false);
-  private int vertexArray, vertexHandle, normalHandle, textureHandle, indexHandle, indexCount;
+  private int vertexArray,
+      vertexHandle,
+      normalHandle,
+      tangentHandle,
+      textureHandle,
+      materialHandle,
+      indexHandle,
+      indexCount;
   private boolean solid;
+  private List<Material> materials = new ArrayList<>();
   private TriangleIndexVertexArray vertArray;
 
   public Model(
@@ -32,13 +42,22 @@ public class Model {
       FloatBuffer textures,
       IntBuffer indices,
       boolean solid) {
-    initGL(vertices, normals, textures, indices);
+    FloatBuffer tangents = BufferUtils.createFloatBuffer(vertices.capacity());
+    tangents.flip();
+    IntBuffer materials = BufferUtils.createIntBuffer(vertices.capacity() / 3);
+    materials.flip();
+    initGL(vertices, normals, tangents, textures, materials, indices);
     initShape(indices, vertices);
     this.solid = solid;
   }
 
   private void initGL(
-      FloatBuffer vertices, FloatBuffer normals, FloatBuffer textures, IntBuffer indices) {
+      FloatBuffer vertices,
+      FloatBuffer normals,
+      FloatBuffer tangents,
+      FloatBuffer textures,
+      IntBuffer materials,
+      IntBuffer indices) {
     indexCount = indices.capacity();
 
     vertexArray = glGenVertexArrays();
@@ -52,9 +71,17 @@ public class Model {
     glBindBuffer(GL_ARRAY_BUFFER, normalHandle);
     glBufferData(GL_ARRAY_BUFFER, normals, GL_STATIC_DRAW);
 
+    tangentHandle = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, tangentHandle);
+    glBufferData(GL_ARRAY_BUFFER, tangents, GL_STATIC_DRAW);
+
     textureHandle = glGenBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, textureHandle);
     glBufferData(GL_ARRAY_BUFFER, textures, GL_STATIC_DRAW);
+
+    materialHandle = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, materialHandle);
+    glBufferData(GL_ARRAY_BUFFER, materials, GL_STATIC_DRAW);
 
     indexHandle = glGenBuffers();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexHandle);
@@ -74,7 +101,6 @@ public class Model {
     indexedMesh.vertexBase = BufferUtils.createByteBuffer(Float.BYTES * vertices.capacity());
     indexedMesh.vertexBase.asFloatBuffer().put(vertices).flip();
     indexedMesh.vertexStride = 3 * Float.BYTES;
-
     vertArray = new TriangleIndexVertexArray();
     vertArray.addIndexedMesh(indexedMesh);
   }
@@ -86,6 +112,9 @@ public class Model {
     List<Integer> vertexIndices = new ArrayList<>();
     List<Integer> textureIndices = new ArrayList<>();
     List<Integer> normalIndices = new ArrayList<>();
+    List<Integer> materialIndices = new ArrayList<>();
+    Map<String, Integer> materialNameToIndex = new HashMap<>();
+    int currentMaterial = 0;
     int faceCount = 0;
 
     try (BufferedReader reader = new BufferedReader(new FileReader(new File(objFile)))) {
@@ -127,7 +156,18 @@ public class Model {
                     .normalize());
           } else
             throw new TundraException("Invalid normal definition when reading '" + objFile + "'");
-        } else if (line.startsWith("f ")) {
+        } else if (line.startsWith("mtllib ")) {
+          materials = new ArrayList<>();
+          Map<String, Material> temp = Material.parse(line.split(" ")[1]);
+          int i = 0;
+          for (String key : temp.keySet()) {
+            materialNameToIndex.put(key, i);
+            materials.add(temp.get(key));
+            i++;
+          }
+        } else if (line.startsWith("usemtl "))
+          currentMaterial = materialNameToIndex.get(line.split(" ")[1]);
+        else if (line.startsWith("f ")) {
           faceCount++;
           String[] split = line.split(" ");
           if (split.length == 4) {
@@ -151,6 +191,7 @@ public class Model {
                 textureIndices.add(-1);
                 normalIndices.add(-1);
               }
+              materialIndices.add(currentMaterial);
             }
           } else
             throw new TundraException("Invalid face definition when reading '" + objFile + "'");
@@ -159,46 +200,72 @@ public class Model {
 
       FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faceCount * 9);
       FloatBuffer normalBuffer = BufferUtils.createFloatBuffer(faceCount * 9);
+      FloatBuffer tangentBuffer = BufferUtils.createFloatBuffer(faceCount * 9);
       FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(faceCount * 6);
+      IntBuffer materialBuffer = BufferUtils.createIntBuffer(faceCount * 3);
       IntBuffer indexBuffer = BufferUtils.createIntBuffer(faceCount * 3);
 
       for (int i = 0; i < faceCount; i++) {
+        Vector3f[] faceVertices = new Vector3f[3];
+        Vector3f[] faceNormals = new Vector3f[3];
+        Vector2f[] faceTextures = new Vector2f[3];
+        int[] faceMaterial = new int[3];
+
         for (int j = 0; j < 3; j++) {
           int index = vertexIndices.get(3 * i + j);
-          Vector3f vertex = new Vector3f(vertices.get(index));
-          vertex.get(vertexBuffer);
-          vertexBuffer.position(vertexBuffer.position() + 3);
+          faceVertices[j] = new Vector3f(vertices.get(index));
 
           index = textureIndices.get(3 * i + j);
-          if (index != -1) {
-            Vector2f texture = new Vector2f(textures.get(index));
-            texture.get(textureBuffer);
-          } else {
-            new Vector2f().get(textureBuffer);
-          }
-          textureBuffer.position(textureBuffer.position() + 2);
+          if (index != -1) faceTextures[j] = new Vector2f(textures.get(index));
+          else faceTextures[j] = new Vector2f();
 
           index = normalIndices.get(3 * i + j);
-          if (index != -1) {
-            Vector3f normal = new Vector3f(normals.get(index));
-            normal.get(normalBuffer);
-          } else new Vector3f(1f, 0f, 0f).get(normalBuffer);
+          if (index != -1) faceNormals[j] = new Vector3f(normals.get(index));
+          else faceNormals[j] = new Vector3f(1, 0, 0); // TODO calculate dynamically
+
+          faceMaterial[j] = materialIndices.get(3 * i + j);
+        }
+
+        Vector3f tangent = new Vector3f(0, 0, 1);
+        Vector3f edge1 = new Vector3f(faceVertices[1]).sub(faceVertices[0]);
+        Vector3f edge2 = new Vector3f(faceVertices[2]).sub(faceVertices[0]);
+        Vector2f deltaUV1 = new Vector2f(faceTextures[1]).sub(faceTextures[0]);
+        Vector2f deltaUV2 = new Vector2f(faceTextures[2]).sub(faceTextures[0]);
+        tangent.x = deltaUV2.y * edge1.x - deltaUV1.y * edge2.x;
+        tangent.y = deltaUV2.y * edge1.y - deltaUV1.y * edge2.y;
+        tangent.z = deltaUV2.y * edge1.z - deltaUV1.y * edge2.z;
+        tangent.normalize();
+
+        for (int j = 0; j < 3; j++) {
+          faceVertices[j].get(vertexBuffer);
+          vertexBuffer.position(vertexBuffer.position() + 3);
+
+          faceTextures[j].get(textureBuffer);
+          textureBuffer.position(textureBuffer.position() + 2);
+
+          faceNormals[j].get(normalBuffer);
           normalBuffer.position(normalBuffer.position() + 3);
 
+          tangent.get(tangentBuffer);
+          tangentBuffer.position(tangentBuffer.position() + 3);
+
+          materialBuffer.put(faceMaterial[j]);
           indexBuffer.put(3 * i + j);
         }
       }
 
       vertexBuffer.flip();
       normalBuffer.flip();
+      tangentBuffer.flip();
       textureBuffer.flip();
+      materialBuffer.flip();
       indexBuffer.flip();
 
-      initGL(vertexBuffer, normalBuffer, textureBuffer, indexBuffer);
+      initGL(vertexBuffer, normalBuffer, tangentBuffer, textureBuffer, materialBuffer, indexBuffer);
       initShape(indexBuffer, vertexBuffer);
 
       this.solid = true;
-    } catch (IOException | NumberFormatException e) {
+    } catch (IOException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
       throw new TundraException("Failed to load '" + objFile + "'", e);
     }
   }
@@ -219,8 +286,16 @@ public class Model {
     return normalHandle;
   }
 
+  public int getTangents() {
+    return tangentHandle;
+  }
+
   public int getTextureCoords() {
     return textureHandle;
+  }
+
+  public int getMaterials() {
+    return materialHandle;
   }
 
   public int getIndices() {
@@ -233,5 +308,13 @@ public class Model {
 
   public boolean solid() {
     return solid;
+  }
+
+  public boolean materialed() {
+    return materials.size() != 0;
+  }
+
+  public List<Material> getMaterialDescriptors() {
+    return materials;
   }
 }

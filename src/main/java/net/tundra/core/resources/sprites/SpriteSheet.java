@@ -58,7 +58,7 @@ public class SpriteSheet {
       glGenerateMipmap(GL_TEXTURE_2D);
       glBindTexture(GL_TEXTURE_2D, 0);
     } catch (IOException e) {
-      throw new TundraException("Failed to create spritesheet", e);
+      throw new TundraException("Failed to create spritesheet '" + file + "'", e);
     }
   }
 

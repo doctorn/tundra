@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL30.*;
 
 import java.nio.FloatBuffer;
 import net.tundra.core.TundraException;
+import net.tundra.core.resources.models.Material;
 import net.tundra.core.scene.Light;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -106,6 +107,24 @@ public class Program {
     uniform(name + ".on", value.active());
     uniform(name + ".shadow_mapped", value.shadowMapped());
     uniform(name + ".directional", value.directional());
+  }
+
+  public void uniform(String name, Material value) throws TundraException {
+    uniform(name + ".map_diff", value.mappedDiffuse());
+    uniform(name + ".map_spec", value.mappedSpecular());
+    uniform(name + ".map_highlight", value.mappedHighlights());
+    uniform(name + ".map_amb", value.mappedAmbient());
+    uniform(name + ".map_bump", value.bumpMapped());
+    uniform(name + ".diff_map", 2);
+    uniform(name + ".spec_map", 3);
+    uniform(name + ".amb_map", 4);
+    uniform(name + ".highlight_map", 5);
+    uniform(name + ".bump_map", 6);
+    uniform(name + ".bump_param", value.getBumpParam());
+    uniform(name + ".diff", value.getDiffuse());
+    uniform(name + ".spec", value.getSpecular());
+    uniform(name + ".amb", value.getAmbient());
+    uniform(name + ".highlight", value.getHighlight());
   }
 
   public void attrib(String name, int size) throws TundraException {

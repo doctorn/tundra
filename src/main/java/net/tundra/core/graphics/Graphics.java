@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
+import net.tundra.core.resources.models.Material;
 import net.tundra.core.resources.models.Model;
 import net.tundra.core.resources.shaders.FragmentShader;
 import net.tundra.core.resources.shaders.Program;
@@ -147,8 +148,6 @@ public class Graphics {
     glBindTexture(GL_TEXTURE_2D, depthMap);
     program.uniform("depth_map", 1);
     program.uniform("cam_pos", game.getCamera().getPosition());
-    program.uniform("ambient", new Vector3f(0.001f, 0.001f, 0.001f));
-    program.uniform("alpha", 1f);
     for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)
       program.uniform("lights[" + i + "]", game.getLights().get(i));
     program.uniform("light_count", game.getLights().size());
@@ -242,28 +241,76 @@ public class Graphics {
       program.uniform("model_matrix_inverse", transformInverse);
       program.uniform("lighting", lighting);
 
-      if (texture != null) {
-        program.uniform("texturing", true);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture.getTexture());
-        program.uniform("tex", 0);
-        program.uniform("tex_start", texture.getStartVector());
-        program.uniform("tex_size", texture.getSizeVector());
-      } else {
-        program.uniform("texturing", false);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, 0);
-      }
-
       glBindVertexArray(model.getModel());
       glBindBuffer(GL_ARRAY_BUFFER, model.getVertices());
       program.attrib("vertex", 3);
       glBindBuffer(GL_ARRAY_BUFFER, model.getNormals());
       program.attrib("normal", 3);
+      glBindBuffer(GL_ARRAY_BUFFER, model.getTangents());
+      program.attrib("tangent", 3);
       glBindBuffer(GL_ARRAY_BUFFER, model.getTextureCoords());
       program.attrib("tex_coord", 2);
+      glBindBuffer(GL_ARRAY_BUFFER, model.getMaterials());
+      program.attrib("material", 1);
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model.getIndices());
-      glDrawElements(GL_TRIANGLES, model.getIndexCount(), GL_UNSIGNED_INT, 0);
+
+      program.uniform("materialed", model.materialed());
+      if (model.materialed()) {
+        for (int i = 0; i < model.getMaterialDescriptors().size(); i++) {
+          program.uniform("texturing", false);
+          program.uniform("current_material", i);
+
+          Material current = model.getMaterialDescriptors().get(i);
+          program.uniform("material", current);
+
+          glActiveTexture(GL_TEXTURE2);
+          if (current.mappedDiffuse())
+            glBindTexture(GL_TEXTURE_2D, current.getDiffuseMap().getTexture());
+          else glBindTexture(GL_TEXTURE_2D, 0);
+          glActiveTexture(GL_TEXTURE3);
+          if (current.mappedSpecular())
+            glBindTexture(GL_TEXTURE_2D, current.getSpecularMap().getTexture());
+          else glBindTexture(GL_TEXTURE_2D, 0);
+          glActiveTexture(GL_TEXTURE4);
+          if (current.mappedAmbient())
+            glBindTexture(GL_TEXTURE_2D, current.getAmbientMap().getTexture());
+          else glBindTexture(GL_TEXTURE_2D, 0);
+          glActiveTexture(GL_TEXTURE5);
+          if (current.mappedHighlights())
+            glBindTexture(GL_TEXTURE_2D, current.getHighlightMap().getTexture());
+          else glBindTexture(GL_TEXTURE_2D, 0);
+          glActiveTexture(GL_TEXTURE6);
+          if (current.bumpMapped()) glBindTexture(GL_TEXTURE_2D, current.getBumpMap().getTexture());
+          else glBindTexture(GL_TEXTURE_2D, 0);
+
+          glDrawElements(GL_TRIANGLES, model.getIndexCount(), GL_UNSIGNED_INT, 0);
+        }
+
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE5);
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glActiveTexture(GL_TEXTURE6);
+        glBindTexture(GL_TEXTURE_2D, 0);
+      } else {
+        if (texture != null) {
+          program.uniform("texturing", true);
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_2D, texture.getTexture());
+          program.uniform("tex", 0);
+          program.uniform("tex_start", texture.getStartVector());
+          program.uniform("tex_size", texture.getSizeVector());
+        } else {
+          program.uniform("texturing", false);
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_2D, 0);
+        }
+        glDrawElements(GL_TRIANGLES, model.getIndexCount(), GL_UNSIGNED_INT, 0);
+      }
 
       if (wireframe) {
         glEnable(GL_CULL_FACE);

@@ -27,13 +27,12 @@ public class TestGame extends Game {
   @Override
   public void init() throws TundraException {
     MONKEY = new Model("res/suzanne.obj");
-    DODGE = new Model("res/dodge.obj");
+    DODGE = new Model("res/dodge-challenger_model.obj");
     toggleDebug();
 
     Box player = new Box(this, new Vector3f(0, -2f, 0), new Vector3f(1f, 0f, 1f));
     player.getBody().setActivationState(CollisionObject.DISABLE_DEACTIVATION);
     addObject(player);
-    camera = new OrbitalCamera(player, 10f);
     camera = new OrbitalCamera(player, 10f);
     camera2 = new FPSCamera(player, new Vector3f(-0.06f, 0.06f, 0));
     addCamera(camera);

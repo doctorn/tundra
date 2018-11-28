@@ -248,6 +248,8 @@ public class Graphics {
       program.attrib("normal", 3);
       glBindBuffer(GL_ARRAY_BUFFER, model.getTangents());
       program.attrib("tangent", 3);
+      glBindBuffer(GL_ARRAY_BUFFER, model.getBitangents());
+      program.attrib("bitangent", 3);
       glBindBuffer(GL_ARRAY_BUFFER, model.getTextureCoords());
       program.attrib("tex_coord", 2);
       glBindBuffer(GL_ARRAY_BUFFER, model.getMaterials());

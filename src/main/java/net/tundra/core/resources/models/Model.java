@@ -28,6 +28,7 @@ public class Model {
       vertexHandle,
       normalHandle,
       tangentHandle,
+      bitangentHandle,
       textureHandle,
       materialHandle,
       indexHandle,
@@ -44,9 +45,11 @@ public class Model {
       boolean solid) {
     FloatBuffer tangents = BufferUtils.createFloatBuffer(vertices.capacity());
     tangents.flip();
+    FloatBuffer bitangents = BufferUtils.createFloatBuffer(vertices.capacity());
+    bitangents.flip();
     IntBuffer materials = BufferUtils.createIntBuffer(vertices.capacity() / 3);
     materials.flip();
-    initGL(vertices, normals, tangents, textures, materials, indices);
+    initGL(vertices, normals, tangents, bitangents, textures, materials, indices);
     initShape(indices, vertices);
     this.solid = solid;
   }
@@ -55,6 +58,7 @@ public class Model {
       FloatBuffer vertices,
       FloatBuffer normals,
       FloatBuffer tangents,
+      FloatBuffer bitangents,
       FloatBuffer textures,
       IntBuffer materials,
       IntBuffer indices) {
@@ -74,6 +78,10 @@ public class Model {
     tangentHandle = glGenBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, tangentHandle);
     glBufferData(GL_ARRAY_BUFFER, tangents, GL_STATIC_DRAW);
+
+    bitangentHandle = glGenBuffers();
+    glBindBuffer(GL_ARRAY_BUFFER, bitangentHandle);
+    glBufferData(GL_ARRAY_BUFFER, bitangents, GL_STATIC_DRAW);
 
     textureHandle = glGenBuffers();
     glBindBuffer(GL_ARRAY_BUFFER, textureHandle);
@@ -201,6 +209,7 @@ public class Model {
       FloatBuffer vertexBuffer = BufferUtils.createFloatBuffer(faceCount * 9);
       FloatBuffer normalBuffer = BufferUtils.createFloatBuffer(faceCount * 9);
       FloatBuffer tangentBuffer = BufferUtils.createFloatBuffer(faceCount * 9);
+      FloatBuffer bitangentBuffer = BufferUtils.createFloatBuffer(faceCount * 9);
       FloatBuffer textureBuffer = BufferUtils.createFloatBuffer(faceCount * 6);
       IntBuffer materialBuffer = BufferUtils.createIntBuffer(faceCount * 3);
       IntBuffer indexBuffer = BufferUtils.createIntBuffer(faceCount * 3);
@@ -226,15 +235,23 @@ public class Model {
           faceMaterial[j] = materialIndices.get(3 * i + j);
         }
 
-        Vector3f tangent = new Vector3f(0, 0, 1);
+        Vector3f tangent = new Vector3f(1, 0, 0);
+        Vector3f bitangent = new Vector3f(0, 0, 1);
+
         Vector3f edge1 = new Vector3f(faceVertices[1]).sub(faceVertices[0]);
         Vector3f edge2 = new Vector3f(faceVertices[2]).sub(faceVertices[0]);
         Vector2f deltaUV1 = new Vector2f(faceTextures[1]).sub(faceTextures[0]);
         Vector2f deltaUV2 = new Vector2f(faceTextures[2]).sub(faceTextures[0]);
+
         tangent.x = deltaUV2.y * edge1.x - deltaUV1.y * edge2.x;
         tangent.y = deltaUV2.y * edge1.y - deltaUV1.y * edge2.y;
         tangent.z = deltaUV2.y * edge1.z - deltaUV1.y * edge2.z;
         tangent.normalize();
+
+        bitangent.x = -deltaUV2.x * edge1.x + deltaUV1.x * edge2.x;
+        bitangent.y = -deltaUV2.x * edge1.y + deltaUV1.x * edge2.y;
+        bitangent.z = -deltaUV2.x * edge1.z + deltaUV1.x * edge2.z;
+        bitangent.normalize();
 
         for (int j = 0; j < 3; j++) {
           faceVertices[j].get(vertexBuffer);
@@ -249,6 +266,9 @@ public class Model {
           tangent.get(tangentBuffer);
           tangentBuffer.position(tangentBuffer.position() + 3);
 
+          bitangent.get(bitangentBuffer);
+          bitangentBuffer.position(bitangentBuffer.position() + 3);
+
           materialBuffer.put(faceMaterial[j]);
           indexBuffer.put(3 * i + j);
         }
@@ -257,11 +277,19 @@ public class Model {
       vertexBuffer.flip();
       normalBuffer.flip();
       tangentBuffer.flip();
+      bitangentBuffer.flip();
       textureBuffer.flip();
       materialBuffer.flip();
       indexBuffer.flip();
 
-      initGL(vertexBuffer, normalBuffer, tangentBuffer, textureBuffer, materialBuffer, indexBuffer);
+      initGL(
+          vertexBuffer,
+          normalBuffer,
+          tangentBuffer,
+          bitangentBuffer,
+          textureBuffer,
+          materialBuffer,
+          indexBuffer);
       initShape(indexBuffer, vertexBuffer);
 
       this.solid = true;
@@ -288,6 +316,10 @@ public class Model {
 
   public int getTangents() {
     return tangentHandle;
+  }
+
+  public int getBitangents() {
+    return bitangentHandle;
   }
 
   public int getTextureCoords() {

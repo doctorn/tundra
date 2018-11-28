@@ -2,7 +2,7 @@
 
 #define MAX_LIGHTS 64
 #define DEFAULT_HIGHLIGHT 1.0
-#define AMBIENT 0.001
+#define AMBIENT 0.005
 
 in vec3 frag_normal;
 in vec3 frag_pos;
@@ -136,11 +136,12 @@ void main() {
     for(int i = 0; i < light_count; i++) {
       Light light = lights[i];
       if (light.on) {
-        vec3 N;
-        if (!materialed || !material.map_bump) N = normalize(frag_normal);
-        else {
-          N = normalize(2 * texture(material.bump_map, material_tex_coord).xyz - vec3(1.)); 
+        vec3 N = normalize(frag_normal);
+        if (materialed && material.map_bump) {
+          N = normalize(2 * texture(material.bump_map, material_tex_coord).xyz - vec3(1.));
           N = normalize(tbn_matrix * N);
+          // colour = vec4(0.5 * N + 0.5, 1.);
+          // return;
         }
         vec3 L = normalize(-light.dir);
         if (!light.directional)

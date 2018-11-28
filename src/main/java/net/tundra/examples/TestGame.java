@@ -11,6 +11,8 @@ import net.tundra.core.resources.sprites.SpriteSheet;
 import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.FixedLight;
 import net.tundra.core.scene.OrbitalCamera;
+import net.tundra.core.scene.TrackingLight;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 public class TestGame extends Game {
@@ -18,7 +20,7 @@ public class TestGame extends Game {
   private OrbitalCamera camera;
   private FPSCamera camera2;
   private Font font;
-  public static Model MONKEY, DODGE;
+  public static Model MONKEY, DODGE, DREDD;
 
   public TestGame() {
     super(1920, 1080, "tundra", true);
@@ -28,9 +30,10 @@ public class TestGame extends Game {
   public void init() throws TundraException {
     MONKEY = new Model("res/suzanne.obj");
     DODGE = new Model("res/dodge-challenger_model.obj");
+    DREDD = new Model("res/dredd.obj");
     toggleDebug();
 
-    Box player = new Box(this, new Vector3f(0, -2f, 0), new Vector3f(1f, 0f, 1f));
+    Box player = new Box(this, new Vector3f(0, -3.5f, 0), new Vector3f(1f, 0f, 1f));
     player.getBody().setActivationState(CollisionObject.DISABLE_DEACTIVATION);
     addObject(player);
     camera = new OrbitalCamera(player, 10f);
@@ -42,6 +45,7 @@ public class TestGame extends Game {
     FixedLight main = new FixedLight(new Vector3f(-1f, -1f, -1f), new Vector3f(0.2f, 0.2f, 0.2f));
     addLight(new FixedLight(4, 0, 0, 0, 0, 1));
     addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
+    addLight(new TrackingLight(camera, new Vector3f(1f, 1f, 0f)));
     addLight(main);
     android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();
@@ -95,7 +99,7 @@ public class TestGame extends Game {
 
   @Override
   public void render(Graphics g) throws TundraException {
-    /* for (int i = -5; i < 5; i++) {
+    for (int i = -5; i < 5; i++) {
       Vector3f position = new Vector3f(i, -3.5f, -2);
       Matrix4f transform =
           new Matrix4f()
@@ -103,7 +107,9 @@ public class TestGame extends Game {
               .scale(0.5f)
               .lookAlong(getCamera().getLookAlong(), getCamera().getUp());
       g.drawModel(Model.PLANE, android.currentFrame(), transform);
-    }*/
+    }
+
+    g.drawModel(DREDD, new Matrix4f().translate(new Vector3f(-5f, 0, 5f)));
 
     g.setColour(new Vector3f(1f, 1f, 1f));
 

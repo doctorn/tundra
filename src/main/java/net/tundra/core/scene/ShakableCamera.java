@@ -40,7 +40,6 @@ public abstract class ShakableCamera extends Camera {
               .mul(RANDOM.nextFloat() * shake / 5000f)
               .add(getScreenY().mul(RANDOM.nextFloat() * shake / 5000f));
       shake -= delta;
-      System.out.println(shakeVector);
     } else {
       shake = 0;
       shakeVector.x = 0;

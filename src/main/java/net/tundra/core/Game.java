@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
+import org.lwjgl.openal.AL;
+import net.tundra.core.audio.Listener;
+import net.tundra.core.audio.Sound;
 import net.tundra.core.graphics.Graphics;
 import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.Event;
@@ -47,6 +50,10 @@ public abstract class Game {
   private Light shadowLight;
   private DynamicsWorld dynamics;
 
+  private List<Sound> sounds = new ArrayList<>();
+  private List<Listener> listeners = new ArrayList<>();
+  private Listener activeListener;
+
   private int fps = 0, frameCount = 0, cumulativeDelta = 0;
 
   public Game(int width, int height, String title, boolean fullscreen) {
@@ -65,6 +72,7 @@ public abstract class Game {
       Display.create();
       graphics = new Graphics(this);
       input = new Input();
+      AL.create();
       initPhysics();
       init();
     } catch (LWJGLException e) {
@@ -101,6 +109,9 @@ public abstract class Game {
       if (physics) dynamics.stepSimulation(realDelta / 1000f);
       for (GameObject object : objects) object.update(this, realDelta);
       for (Light light : lights) light.update(this, realDelta);
+      for (Listener listener : listeners) listener.update(this, realDelta);
+      activeListener.update(this, realDelta);
+      for (Sound sound : sounds) sound.update(this, realDelta);
       for (Camera camera : cameras) camera.update(this, realDelta);
       for (SceneComponent event : events) event.update(this, realDelta);
       update(realDelta);
@@ -109,6 +120,8 @@ public abstract class Game {
       cleanup(lights);
       cleanup(cameras);
       cleanup(events);
+      cleanup(sounds);
+      cleanup(listeners);
 
       graphics.setColour(new Vector3f(1f, 1f, 1f));
       for (GameObject object : objects) object.render(this, graphics);
@@ -125,6 +138,7 @@ public abstract class Game {
       checkError();
       Display.update();
     } while (!Display.isCloseRequested());
+    AL.destroy();
   }
 
   public void checkError() throws TundraException {
@@ -183,6 +197,14 @@ public abstract class Game {
     cameras.add(camera);
   }
 
+  public void addSound(Sound sound) {
+    sounds.add(sound);
+  }
+
+  public void addListener(Listener listener) {
+    listeners.add(listener);
+  }
+
   public void addObject(GameObject object) {
     objects.add(object);
     if (object instanceof PhysicsObject) {
@@ -231,6 +253,14 @@ public abstract class Game {
 
   public void activate(Camera camera) {
     active = camera;
+  }
+
+  public void activateListener(Listener listener) {
+    activeListener = listener;
+  }
+
+  public Listener getListener() {
+    return activeListener;
   }
 
   public Camera getCamera() {

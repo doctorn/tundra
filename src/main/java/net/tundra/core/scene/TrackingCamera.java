@@ -1,9 +1,8 @@
 package net.tundra.core.scene;
 
-import net.tundra.core.Game;
 import org.joml.Vector3f;
 
-public class TrackingCamera extends Camera {
+public abstract class TrackingCamera extends Camera {
   private Trackable tracked;
   private Vector3f offset;
 
@@ -14,8 +13,7 @@ public class TrackingCamera extends Camera {
   }
 
   @Override
-  public void update(Game game, float delta) {
-    setPosition(tracked.getPosition().add(offset));
-    setTarget(tracked.getPosition());
+  public Vector3f getPosition() {
+    return tracked.getPosition().add(offset);
   }
 }

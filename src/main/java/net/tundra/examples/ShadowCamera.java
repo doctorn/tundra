@@ -1,5 +1,6 @@
 package net.tundra.examples;
 
+import net.tundra.core.Game;
 import net.tundra.core.scene.Trackable;
 import net.tundra.core.scene.TrackingCamera;
 import org.joml.Matrix4f;
@@ -16,4 +17,7 @@ public class ShadowCamera extends TrackingCamera {
         .ortho(-20f, 20f, -20f, 20f, 0.01f, 100f)
         .lookAt(getPosition(), getTarget(), getUp());
   }
+
+  @Override
+  public void update(Game game, float delta) {}
 }

@@ -1,9 +1,8 @@
 package net.tundra.core.scene;
 
-import net.tundra.core.Game;
 import org.joml.Vector3f;
 
-public class TrackingLight extends Light {
+public abstract class TrackingLight extends Light {
   private Trackable tracked;
 
   public TrackingLight(Trackable tracked, Vector3f colour) {
@@ -17,10 +16,7 @@ public class TrackingLight extends Light {
   }
 
   @Override
-  public void update(Game game, float delta) {
-    setPosition(tracked.getPosition());
-    if (tracked instanceof SceneComponent) {
-      if (((SceneComponent) tracked).dying()) kill();
-    }
+  public Vector3f getPosition() {
+    return tracked.getPosition();
   }
 }

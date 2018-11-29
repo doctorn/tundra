@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.tundra</groupId>
   <artifactId>core</artifactId>
-  <version>0.1</version>
+  <version>0.3</version>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -45,6 +45,15 @@
     </dependency>
   </dependencies>
   <build>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/java/net/tundra/core/graphics/</directory>
+        <includes>
+          <include>*.glsl</include>
+        </includes>
+        <targetPath>net/tundra/core/graphics/</targetPath>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

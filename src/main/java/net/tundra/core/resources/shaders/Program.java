@@ -106,7 +106,9 @@ public class Program {
     uniform(name + ".quadratic", value.getQuadratic());
     uniform(name + ".on", value.active());
     uniform(name + ".shadow_mapped", value.shadowMapped());
+    uniform(name + ".spotlight", value.spotlight());
     uniform(name + ".directional", value.directional());
+    uniform(name + ".theta", value.getTheta());
   }
 
   public void uniform(String name, Material value) throws TundraException {

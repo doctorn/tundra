@@ -54,7 +54,7 @@ public class TestGameState extends GameState {
     FixedLight main = new FixedLight(new Vector3f(-1f, -1f, -1f), new Vector3f(0.6f, 0.6f, 0.6f));
     addLight(new FixedLight(4, 0, 0, 0, 0, 1));
     addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
-    addLight(new FixedLight(-2, 0, -4, 1, 1, 0));
+    // addLight(new FixedLight(-2, 0, -4, 1, 1, 0));
     addLight(main);
     android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();

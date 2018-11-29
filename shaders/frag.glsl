@@ -28,8 +28,11 @@ struct Light {
     float linear;
     float quadratic;
 
+    float theta;
+
     bool on;
     bool shadow_mapped;
+    bool spotlight;
     bool directional;
 };
 
@@ -157,19 +160,23 @@ void main() {
         vec3 V = normalize(cam_pos - frag_pos);
         vec3 R = reflect(-L, N);
 
-        float distance = length(light.pos - frag_pos);
-        float attentuation = 1.0;
-        if (!light.directional)
-          attentuation = 1.0 / (light.constant + light.linear * distance +
-                                         light.quadratic * (distance * distance));
+        if (light.spotlight && dot(L, normalize(-light.dir)) < cos(light.theta)) {
+          continue; 
+        } else {
+          float distance = length(light.pos - frag_pos);
+          float attentuation = 1.0;
+          if (!light.directional)
+            attentuation = 1.0 / (light.constant + light.linear * distance +
+                                           light.quadratic * (distance * distance));
 
-        vec3 diff = light.col * max((dot(N, L)), 0.0) * vec3(diff_col);
-        vec3 spec = light.col * pow(max(dot(V, R), 0.0), highlight) * vec3(spec_col);
+          vec3 diff = light.col * max((dot(N, L)), 0.0) * vec3(diff_col);
+          vec3 spec = light.col * pow(max(dot(V, R), 0.0), highlight) * vec3(spec_col);
 
-        float shadow_scalar = 1.;
-        if (light.shadow_mapped)
-          shadow_scalar = 1. - shadow(N, L);
-        temp += attentuation * (diff + spec) * shadow_scalar;
+          float shadow_scalar = 1.;
+          if (light.shadow_mapped)
+            shadow_scalar = 1. - shadow(N, L);
+          temp += attentuation * (diff + spec) * shadow_scalar;
+        }
       }
     } 
     

@@ -12,11 +12,10 @@ public abstract class Light extends SceneComponent implements Trackable {
   private Vector3f direction = new Vector3f(0, 0, 0);
   private Vector3f colour = new Vector3f(0, 0, 0);
 
-  private float constant = 1f;
-  private float linear = 1f;
-  private float quadratic = 1f;
+  private float constant = 1f, linear = 1f, quadratic = 1f;
+  private float theta;
 
-  private boolean active = true, shadowMapped = false, directional = false;
+  private boolean active = true, shadowMapped = false, directional = false, spotlight = false;
 
   public Light() {}
 
@@ -30,14 +29,36 @@ public abstract class Light extends SceneComponent implements Trackable {
   }
 
   public Light(Vector3f direction, Vector3f colour) {
+    this.direction = new Vector3f(direction);
+    this.colour = new Vector3f(colour);
     directional = true;
-    this.direction = direction;
-    this.colour = colour;
+    spotlight = false;
+  }
+
+  public Light(
+      Vector3f position,
+      Vector3f colour,
+      Vector3f direction,
+      float constant,
+      float linear,
+      float quadratic,
+      float theta) {
+    this.position = new Vector3f(position);
+    this.direction = new Vector3f(direction);
+    this.colour = new Vector3f(colour);
+
+    this.constant = constant;
+    this.linear = linear;
+    this.quadratic = quadratic;
+
+    this.theta = theta;
+    spotlight = true;
+    directional = false;
   }
 
   public Light(Vector3f position, Vector3f colour, float constant, float linear, float quadratic) {
-    this.position = position;
-    this.colour = colour;
+    this.position = new Vector3f(position);
+    this.colour = new Vector3f(colour);
 
     this.constant = constant;
     this.linear = linear;
@@ -58,6 +79,10 @@ public abstract class Light extends SceneComponent implements Trackable {
 
   public float getQuadratic() {
     return quadratic;
+  }
+
+  public float getTheta() {
+    return theta;
   }
 
   @Override
@@ -101,9 +126,14 @@ public abstract class Light extends SceneComponent implements Trackable {
     return directional;
   }
 
+  public boolean spotlight() {
+    return spotlight;
+  }
+
   public void setDirectional(Vector3f direction) {
-    this.direction = direction;
+    this.direction = new Vector3f(direction);
     directional = true;
+    spotlight = false;
   }
 
   public void setUndirectional() {
@@ -112,6 +142,17 @@ public abstract class Light extends SceneComponent implements Trackable {
 
   public Vector3f getDirection() {
     return new Vector3f(direction);
+  }
+
+  public void setDirection(Vector3f direction) {
+    this.direction = new Vector3f(direction);
+  }
+
+  public void makeSpotlight(Vector3f direction, float theta) {
+    this.direction = new Vector3f(direction);
+    this.theta = theta;
+    spotlight = true;
+    directional = false;
   }
 
   public void renderDebug(Game game, Graphics graphics) throws TundraException {

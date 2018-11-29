@@ -21,9 +21,9 @@ public abstract class Camera extends SceneComponent implements Trackable {
   }
 
   public Camera(Vector3f position, Vector3f target, Vector3f up, float fov) {
-    this.position = position;
-    this.target = target;
-    this.up = up;
+    this.position = new Vector3f(position);
+    this.target = new Vector3f(target);
+    this.up = new Vector3f(up);
     this.fov = fov;
     perspective = true;
   }
@@ -43,7 +43,7 @@ public abstract class Camera extends SceneComponent implements Trackable {
   }
 
   public void setPosition(Vector3f position) {
-    this.position = position;
+    this.position = new Vector3f(position);
   }
 
   public void togglePerspective() {

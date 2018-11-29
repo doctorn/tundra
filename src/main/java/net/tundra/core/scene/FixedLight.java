@@ -21,6 +21,17 @@ public final class FixedLight extends Light {
     super(position, colour, constant, linear, quadratic);
   }
 
+  public FixedLight(
+      Vector3f position,
+      Vector3f colour,
+      Vector3f direction,
+      float constant,
+      float linear,
+      float quadratic,
+      float theta) {
+    super(position, colour, direction, constant, linear, quadratic, theta);
+  }
+
   @Override
   public void update(Game game, float delta) {}
 }

@@ -1,3 +1,2 @@
-- [ ] Spot lights
 - [ ] Audio seperate players from resources
 - [ ] Music

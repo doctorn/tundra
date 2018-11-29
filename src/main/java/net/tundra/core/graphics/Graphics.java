@@ -21,6 +21,7 @@ import net.tundra.core.resources.sprites.Font;
 import net.tundra.core.resources.sprites.Sprite;
 import net.tundra.core.scene.Camera;
 import net.tundra.core.scene.InterfaceCamera;
+import net.tundra.core.scene.Light;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -187,9 +188,10 @@ public class Graphics {
     glBindTexture(GL_TEXTURE_2D, depthMap);
     program.uniform("depth_map", 1);
     program.uniform("cam_pos", game.getCurrentState().getCamera().getPosition());
-    for (int i = 0; i < game.getCurrentState().getLights().size() && i < MAX_LIGHTS; i++)
-      program.uniform("lights[" + i + "]", game.getCurrentState().getLights().get(i));
-    program.uniform("light_count", game.getCurrentState().getLights().size());
+    List<Light> lights = game.getCurrentState().getLights();
+    for (int i = 0; i < lights.size() && i < MAX_LIGHTS; i++)
+      program.uniform("lights[" + i + "]", lights.get(i));
+    program.uniform("light_count", lights.size());
     for (Draw draw : scene) draw.execute(game.getCurrentState().getCamera());
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);

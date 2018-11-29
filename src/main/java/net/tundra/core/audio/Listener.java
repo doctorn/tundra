@@ -1,13 +1,14 @@
 package net.tundra.core.audio;
 
+import static org.lwjgl.openal.AL10.*;
+
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.scene.SceneComponent;
 import net.tundra.core.scene.Trackable;
 import org.joml.Vector3f;
-import static org.lwjgl.openal.AL10.*;
 
-public class Listener extends SceneComponent implements Trackable{
+public class Listener extends SceneComponent implements Trackable {
 
   private Vector3f position;
   private Vector3f velocity;
@@ -17,10 +18,9 @@ public class Listener extends SceneComponent implements Trackable{
 
   public Listener(Vector3f pos, float gain) {
     this.position = pos;
-    this.velocity = new Vector3f(0,0,0);
-    this.orientation = new Vector3f(0,0,0);
+    this.velocity = new Vector3f(0, 0, 0);
+    this.orientation = new Vector3f(0, 0, 0);
     this.gain = gain;
-
   }
 
   public Vector3f getPosition() {
@@ -57,7 +57,6 @@ public class Listener extends SceneComponent implements Trackable{
 
   @Override
   public void update(Game game, float delta) throws TundraException {
-
     alListener3f(AL_POSITION, position.x, position.y, position.z);
     alListener3f(AL_VELOCITY, velocity.x, velocity.y, velocity.z);
     alListener3f(AL_ORIENTATION, orientation.x, orientation.y, orientation.z);

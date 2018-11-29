@@ -31,12 +31,12 @@ public abstract class GameState {
       lighting = true,
       shadowMapping = false,
       physics = false;
-  private List<Light> lights = new ArrayList<>();
-  private List<Camera> cameras = new ArrayList<>();
-  private List<GameObject> objects = new ArrayList<>();
+  private List<Light> lights = new ArrayList<>(), bufferedLights = new ArrayList<>();
+  private List<Camera> cameras = new ArrayList<>(), bufferedCameras = new ArrayList<>();
+  private List<GameObject> objects = new ArrayList<>(), bufferedObjects = new ArrayList<>();
   private List<SceneComponent> events = new ArrayList<>(), bufferedEvents = new ArrayList<>();
-  private List<Sound> sounds = new ArrayList<>();
-  private List<Listener> listeners = new ArrayList<>();
+  private List<Sound> sounds = new ArrayList<>(), bufferedSounds = new ArrayList<>();
+  private List<Listener> listeners = new ArrayList<>(), bufferedListeners = new ArrayList<>();
   private Listener activeListener;
   private Camera active = Graphics.INTERFACE_CAMERA, shadowCamera;
   private Light shadowLight;
@@ -61,11 +61,23 @@ public abstract class GameState {
     if (physics) dynamics.stepSimulation(delta / 1000f);
     for (GameObject object : objects) object.update(game, delta);
     for (Light light : lights) light.update(game, delta);
-    for (Listener listener : listeners) listener.update(game, delta);
     for (Sound sound : sounds) sound.update(game, delta);
     for (Camera camera : cameras) camera.update(game, delta);
     for (SceneComponent event : events) event.update(game, delta);
+    if (activeListener != null) activeListener.update(game, delta);
+
+    objects.addAll(bufferedObjects);
+    lights.addAll(bufferedLights);
+    sounds.addAll(bufferedSounds);
+    cameras.addAll(bufferedCameras);
     events.addAll(bufferedEvents);
+    listeners.addAll(bufferedListeners);
+
+    bufferedObjects = new ArrayList<>();
+    bufferedLights = new ArrayList<>();
+    bufferedSounds = new ArrayList<>();
+    bufferedCameras = new ArrayList<>();
+    bufferedListeners = new ArrayList<>();
     bufferedEvents = new ArrayList<>();
 
     cleanup(game, objects);
@@ -119,27 +131,27 @@ public abstract class GameState {
   }
 
   public List<Light> getLights() {
-    return lights;
+    return new ArrayList<>(lights);
   }
 
   public void addLight(Light light) {
-    lights.add(light);
+    bufferedLights.add(light);
   }
 
   public void addCamera(Camera camera) {
-    cameras.add(camera);
+    bufferedCameras.add(camera);
   }
 
   public void addSound(Sound sound) {
-    sounds.add(sound);
+    bufferedSounds.add(sound);
   }
 
   public void addListener(Listener listener) {
-    listeners.add(listener);
+    bufferedListeners.add(listener);
   }
 
   public void addObject(GameObject object) {
-    objects.add(object);
+    bufferedObjects.add(object);
     if (object instanceof PhysicsObject) {
       PhysicsObject physicsObject = (PhysicsObject) object;
       dynamics.addRigidBody(physicsObject.getBody());

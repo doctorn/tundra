@@ -17,6 +17,7 @@ import net.tundra.core.scene.FixedLight;
 import net.tundra.core.scene.OrbitalCamera;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 public class TestGameState extends GameState {
   private Animation android;
@@ -135,7 +136,10 @@ public class TestGameState extends GameState {
               .translate(position)
               .scale(0.5f)
               .lookAlong(getCamera().getLookAlong(), getCamera().getUp());
-      graphics.drawModel(Model.PLANE, android.currentFrame(), transform);
+      if (i != 4) graphics.drawModel(Model.PLANE, android.currentFrame(), transform);
+      else
+        graphics.drawModelFlash(
+            Model.PLANE, android.currentFrame(), transform, new Vector4f(1f, 1f, 1f, 1f));
     }
 
     // graphics.drawModel(DREDD, new Matrix4f().translate(new Vector3f(-5f, 0, 5f)));

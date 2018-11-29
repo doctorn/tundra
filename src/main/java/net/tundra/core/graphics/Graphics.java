@@ -98,17 +98,43 @@ public class Graphics {
   }
 
   public void drawModelWireframe(Model model, Matrix4f transform) throws TundraException {
-    scene.add(new Draw(false, true, model, null, transform, colour));
+    scene.add(new Draw(false, true, false, 1f, model, null, transform, colour));
   }
 
   public void drawModel(Model model, Matrix4f transform) throws TundraException {
     drawModel(model, null, transform);
   }
 
+  public void drawModelFlash(Model model, Matrix4f transform, Vector4f colour)
+      throws TundraException {
+    drawModelFlash(model, null, transform, colour);
+  }
+
   public void drawModel(Model model, Sprite texture, Matrix4f transform) throws TundraException {
     scene.add(
         new Draw(
-            game.getCurrentState().lightingEnabled(), false, model, texture, transform, colour));
+            game.getCurrentState().lightingEnabled(),
+            false,
+            false,
+            1f,
+            model,
+            texture,
+            transform,
+            colour));
+  }
+
+  public void drawModelFlash(Model model, Sprite texture, Matrix4f transform, Vector4f colour)
+      throws TundraException {
+    scene.add(
+        new Draw(
+            game.getCurrentState().lightingEnabled(),
+            false,
+            true,
+            1f,
+            model,
+            texture,
+            transform,
+            colour));
   }
 
   public void drawString(String string, Font font, int x, int y) throws TundraException {
@@ -116,11 +142,58 @@ public class Graphics {
       drawImage(font.getCharacter(string.charAt(i)), x + font.getCharacterWidth() * i, y);
   }
 
+  public void drawString(String string, Font font, int x, int y, float opacity)
+      throws TundraException {
+    for (int i = 0; i < string.length(); i++)
+      drawImage(font.getCharacter(string.charAt(i)), x + font.getCharacterWidth() * i, y, opacity);
+  }
+
+  public void drawStringFlash(String string, Font font, int x, int y, Vector4f colour)
+      throws TundraException {
+    for (int i = 0; i < string.length(); i++)
+      drawImageFlash(
+          font.getCharacter(string.charAt(i)), x + font.getCharacterWidth() * i, y, colour);
+  }
+
   public void drawImage(Sprite sprite, int x, int y) throws TundraException {
     external.add(
         new Draw(
             false,
             false,
+            false,
+            1f,
+            Model.PLANE,
+            sprite,
+            new Matrix4f()
+                .translate(x, game.getHeight() - y, 0)
+                .scale(sprite.getWidth() / 2f, sprite.getHeight() / 2f, 1)
+                .translate(1, -1, 0),
+            colour));
+  }
+
+  public void drawImage(Sprite sprite, int x, int y, float opacity) throws TundraException {
+    external.add(
+        new Draw(
+            false,
+            false,
+            false,
+            opacity,
+            Model.PLANE,
+            sprite,
+            new Matrix4f()
+                .translate(x, game.getHeight() - y, 0)
+                .scale(sprite.getWidth() / 2f, sprite.getHeight() / 2f, 1)
+                .translate(1, -1, 0),
+            colour));
+  }
+
+  public void drawImageFlash(Sprite sprite, int x, int y, Vector4f colour) throws TundraException {
+    external.add(
+        new Draw(
+            false,
+            false,
+            true,
+            1f,
             Model.PLANE,
             sprite,
             new Matrix4f()
@@ -135,6 +208,8 @@ public class Graphics {
         new Draw(
             false,
             true,
+            false,
+            1f,
             Model.PLANE,
             null,
             new Matrix4f()
@@ -149,6 +224,8 @@ public class Graphics {
         new Draw(
             false,
             false,
+            false,
+            1f,
             Model.PLANE,
             null,
             new Matrix4f()
@@ -211,7 +288,8 @@ public class Graphics {
   }
 
   private class Draw {
-    private boolean lighting, wireframe;
+    private boolean lighting, wireframe, flash;
+    private float opacity;
     private Model model;
     private Matrix4f transform;
     private Sprite texture;
@@ -220,12 +298,16 @@ public class Graphics {
     public Draw(
         boolean lighting,
         boolean wireframe,
+        boolean flash,
+        float opacity,
         Model model,
         Sprite texture,
         Matrix4f transform,
         Vector4f colour) {
       this.lighting = lighting;
       this.wireframe = wireframe;
+      this.flash = flash;
+      this.opacity = opacity;
       this.model = model;
       this.transform = transform;
       this.texture = texture;
@@ -282,6 +364,8 @@ public class Graphics {
       transformInverse.transpose();
       program.uniform("model_matrix_inverse", transformInverse);
       program.uniform("lighting", lighting);
+      program.uniform("flash", flash);
+      program.uniform("opacity", opacity);
 
       glBindVertexArray(model.getModel());
       glBindBuffer(GL_ARRAY_BUFFER, model.getVertices());

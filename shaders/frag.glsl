@@ -42,6 +42,9 @@ uniform vec3 shadow_dir;
 
 uniform int light_count;
 
+uniform float opacity;
+uniform bool flash;
+
 struct Material {
   bool map_diff;
   bool map_spec;
@@ -130,6 +133,11 @@ void main() {
     spec_col = col.rgb; 
     highlight = DEFAULT_HIGHLIGHT;
   }
+  
+  if (flash) {
+    diff_col = col.rgb * col.a + diff_col * (1. - col.a);
+    spec_col = col.rgb * col.a + spec_col * (1. - col.a);
+  }
 
   if (lighting) {
     vec3 temp = AMBIENT * amb_col;
@@ -171,7 +179,11 @@ void main() {
   if (!materialed && !lighting && !texturing) {
     colour.a = col.a;
     return;
+  } else if (!materialed && !lighting) {
+    colour.a = opacity;
+    return;
   }
+
   float gamma = 2.2;
   colour = vec4(pow(colour.rgb, vec3(1. / gamma)), 1.);
 }

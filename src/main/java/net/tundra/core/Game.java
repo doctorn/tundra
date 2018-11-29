@@ -106,7 +106,7 @@ public abstract class Game {
           else {
             changingState = true;
             currentState.lerp(
-                1000,
+                750,
                 f -> {
                   maskOpacity = f;
                 },
@@ -115,7 +115,7 @@ public abstract class Game {
                 () -> {
                   currentState = state;
                   state.lerp(
-                      1000,
+                      750,
                       f -> {
                         maskOpacity = f;
                       },

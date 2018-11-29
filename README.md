@@ -38,7 +38,7 @@ Here is an example of a mesh rendered in `tundra` with several materials and lig
 
 ![Rendering example](http://nathancorbyn.com/dredd.png)
 
-The model used in this scene is available [here](https://sketchfab.com/models/74a05141476d4f6f8ebf83d9636923c5).
+The model used in this scene is available [here](https://sketchfab.com/models/74a05141476d4f6f8ebf83d9636923c5), all credit goes to the original creators.
 
 We don't yet support PBR, although it may take another rewrite before this is possible. We do however support normal, specular, diffuse, ambient and highlight mapping (all of which are used in the above).
 

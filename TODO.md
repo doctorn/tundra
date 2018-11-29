@@ -1,7 +1,5 @@
-- [x] Tundra logo
-- [ ] GameState system
 - [ ] JBullet collision callbacks
-- [ ] Convex hull collision shapes (or similar)
 - [ ] Particle system
 - [ ] Spot lights
 - [ ] Audio seperate players from resources
+- [ ] Convex hull collision shapes (or similar)

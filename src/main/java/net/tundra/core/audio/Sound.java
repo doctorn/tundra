@@ -1,5 +1,10 @@
 package net.tundra.core.audio;
 
+import static org.lwjgl.openal.AL10.*;
+
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.scene.SceneComponent;
@@ -7,14 +12,7 @@ import net.tundra.core.scene.Trackable;
 import org.joml.Vector3f;
 import org.lwjgl.util.WaveData;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import static org.lwjgl.openal.AL10.*;
-
 public class Sound extends SceneComponent implements Trackable {
-
   private int id;
   private int buffer;
   private WaveData waveData;
@@ -24,39 +22,36 @@ public class Sound extends SceneComponent implements Trackable {
   private float pitch;
   private boolean looping;
 
-  public Sound(String file, Vector3f position, Vector3f velocity, float gain,
-               float pitch, boolean looping) throws TundraException {
-    BufferedInputStream bufferedInputStream;
+  public Sound(
+      String file, Vector3f position, Vector3f velocity, float gain, float pitch, boolean looping)
+      throws TundraException {
+    try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(file))) {
+      waveData = WaveData.create(in);
+      this.position = position;
+      this.velocity = velocity;
+      this.gain = gain;
+      this.pitch = pitch;
+      this.looping = looping;
 
-    try {
-      bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
-    } catch (FileNotFoundException e) {
-      throw new TundraException("Failed to load sound file: '" + file + "'", e);
+      this.id = alGenSources();
+      this.buffer = alGenBuffers();
+
+      alBufferData(buffer, waveData.format, waveData.data, waveData.samplerate);
+    } catch (IOException e) {
+      throw new TundraException("Failed to load sound file '" + file + "'", e);
     }
-
-    waveData = WaveData.create(bufferedInputStream);
-    this.position = position;
-    this.velocity = velocity;
-    this.gain = gain;
-    this.pitch = pitch;
-    this.looping = looping;
-
-    this.id = alGenSources();
-    this.buffer = alGenBuffers();
-
-    alBufferData(buffer, waveData.format, waveData.data, waveData.samplerate);
   }
 
   public Sound(String file) throws TundraException {
-    this(file, new Vector3f(0,0,0), new Vector3f(0,0,0), 1, 1, false);
+    this(file, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1, 1, false);
   }
 
   public Sound(String file, Vector3f position) throws TundraException {
-    this(file, position, new Vector3f(0,0,0), 1, 1, false);
+    this(file, position, new Vector3f(0, 0, 0), 1, 1, false);
   }
 
   public Sound(String file, boolean looping) throws TundraException {
-    this(file, new Vector3f(0,0,0), new Vector3f(0,0,0), 1, 1, looping);
+    this(file, new Vector3f(0, 0, 0), new Vector3f(0, 0, 0), 1, 1, looping);
   }
 
   public void play() {
@@ -148,6 +143,4 @@ public class Sound extends SceneComponent implements Trackable {
     waveData.dispose();
     alDeleteBuffers(buffer);
   }
-
-
 }

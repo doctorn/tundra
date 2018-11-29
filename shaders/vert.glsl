@@ -4,7 +4,6 @@
 
 in vec3 vertex;
 in vec3 tangent;
-in vec3 bitangent;
 in vec3 normal;
 in vec2 tex_coord;
 in int material;
@@ -15,6 +14,8 @@ uniform mat4 model_matrix_inverse;
 
 uniform bool shadow_mapping;
 uniform mat4 shadow_vp_matrix;
+
+uniform bool materialed;
 
 out vec3 frag_normal;
 out vec3 frag_pos;
@@ -36,17 +37,12 @@ void main() {
       frag_pos_light_space = vec3(frag_pos_light_space_hom) / frag_pos_light_space_hom.w;
   }
 
-  
-
-  vec3 corrected_normal = normalize(normal);
-  vec3 corrected_tangent = 
-    normalize(normalize(tangent) 
-        - dot(normalize(tangent), corrected_normal) * corrected_normal);
-  vec3 corrected_bitangent = 
-    normalize(normalize(bitangent) 
-        - dot(normalize(bitangent), corrected_normal) * corrected_normal);
-  if (dot(cross(corrected_normal, corrected_tangent), corrected_bitangent) < 0.){
-     corrected_tangent = corrected_tangent * -1.;
+  if (materialed) {
+    vec3 corrected_normal = normalize(normal);
+    vec3 corrected_tangent = 
+      normalize(normalize(tangent) 
+          - dot(normalize(tangent), corrected_normal) * corrected_normal);
+    vec3 corrected_bitangent = normalize(cross(corrected_normal, corrected_tangent));
+    tbn_matrix = mat3(corrected_tangent, corrected_bitangent, corrected_normal);
   }
-  tbn_matrix = mat3(corrected_tangent, corrected_bitangent, corrected_normal);
 }

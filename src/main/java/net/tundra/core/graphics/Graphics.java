@@ -27,9 +27,9 @@ import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
 
 public class Graphics {
-  private static final Camera INTERFACE_CAMERA = new InterfaceCamera();
   private static final int MAX_LIGHTS = 64;
   public static final int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 4096;
+  public static final Camera INTERFACE_CAMERA = new InterfaceCamera();
 
   private Game game;
   private Program program, shadows;
@@ -105,7 +105,9 @@ public class Graphics {
   }
 
   public void drawModel(Model model, Sprite texture, Matrix4f transform) throws TundraException {
-    scene.add(new Draw(game.lightingEnabled(), false, model, texture, transform, colour));
+    scene.add(
+        new Draw(
+            game.getCurrentState().lightingEnabled(), false, model, texture, transform, colour));
   }
 
   public void drawString(String string, Font font, int x, int y) throws TundraException {
@@ -156,7 +158,7 @@ public class Graphics {
   }
 
   public void render() throws TundraException {
-    if (game.shadowMapping()) {
+    if (game.getCurrentState().shadowMapping()) {
       glUseProgram(shadows.getProgram());
       glBindFramebuffer(GL_FRAMEBUFFER, depthBuffer);
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
@@ -172,21 +174,23 @@ public class Graphics {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glUseProgram(program.getProgram());
-    program.uniform("shadow_mapping", game.shadowMapping());
-    if (game.shadowMapping()) {
-      program.uniform("shadow_dir", game.getShadowCamera().getLook().mul(-1));
+    program.uniform("shadow_mapping", game.getCurrentState().shadowMapping());
+    if (game.getCurrentState().shadowMapping()) {
+      program.uniform("shadow_dir", game.getCurrentState().getShadowCamera().getLook().mul(-1));
       program.uniform(
           "shadow_vp_matrix",
-          game.getShadowCamera().getViewProjectionMatrix(SHADOW_WIDTH, SHADOW_HEIGHT));
+          game.getCurrentState()
+              .getShadowCamera()
+              .getViewProjectionMatrix(SHADOW_WIDTH, SHADOW_HEIGHT));
     }
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthMap);
     program.uniform("depth_map", 1);
-    program.uniform("cam_pos", game.getCamera().getPosition());
-    for (int i = 0; i < game.getLights().size() && i < MAX_LIGHTS; i++)
-      program.uniform("lights[" + i + "]", game.getLights().get(i));
-    program.uniform("light_count", game.getLights().size());
-    for (Draw draw : scene) draw.execute(game.getCamera());
+    program.uniform("cam_pos", game.getCurrentState().getCamera().getPosition());
+    for (int i = 0; i < game.getCurrentState().getLights().size() && i < MAX_LIGHTS; i++)
+      program.uniform("lights[" + i + "]", game.getCurrentState().getLights().get(i));
+    program.uniform("light_count", game.getCurrentState().getLights().size());
+    for (Draw draw : scene) draw.execute(game.getCurrentState().getCamera());
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0);
@@ -243,7 +247,8 @@ public class Graphics {
         }
         shadows.uniform(
             "mvp_matrix",
-            game.getShadowCamera()
+            game.getCurrentState()
+                .getShadowCamera()
                 .getViewProjectionMatrix(SHADOW_WIDTH, SHADOW_HEIGHT)
                 .mul(transform));
         glBindBuffer(GL_ARRAY_BUFFER, model.getVertices());
@@ -281,14 +286,16 @@ public class Graphics {
       program.attrib("vertex", 3);
       glBindBuffer(GL_ARRAY_BUFFER, model.getNormals());
       program.attrib("normal", 3);
-      glBindBuffer(GL_ARRAY_BUFFER, model.getTangents());
-      program.attrib("tangent", 3);
-      glBindBuffer(GL_ARRAY_BUFFER, model.getBitangents());
-      program.attrib("bitangent", 3);
-      glBindBuffer(GL_ARRAY_BUFFER, model.getTextureCoords());
-      program.attrib("tex_coord", 2);
-      glBindBuffer(GL_ARRAY_BUFFER, model.getMaterials());
-      program.attrib("material", 1);
+      if (model.materialed()) {
+        glBindBuffer(GL_ARRAY_BUFFER, model.getTangents());
+        program.attrib("tangent", 3);
+        glBindBuffer(GL_ARRAY_BUFFER, model.getMaterials());
+        program.attrib("material", 1);
+      }
+      if (model.materialed() || texture != null) {
+        glBindBuffer(GL_ARRAY_BUFFER, model.getTextureCoords());
+        program.attrib("tex_coord", 2);
+      }
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, model.getIndices());
 
       program.uniform("materialed", model.materialed());

@@ -115,7 +115,7 @@ public abstract class Light extends SceneComponent implements Trackable {
   }
 
   public void renderDebug(Game game, Graphics graphics) throws TundraException {
-    graphics.setColour(new Vector3f(0.11f, 0.63f, 0.95f));
+    graphics.setColour(new Vector3f(0.976f, 0.29f, 0.463f));
     graphics.drawModelWireframe(Model.CUBE, new Matrix4f().translate(position).scale(0.2f));
   }
 

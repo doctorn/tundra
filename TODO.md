@@ -1,13 +1,7 @@
-### Resources
-
-- [ ] Audio
-
-### Engine Interface
-
-- [ ] Particle system
+- [x] Tundra logo
 - [ ] GameState system
-- [ ] Coherent JBullet interface
-
-### Lighting
-
+- [ ] JBullet collision callbacks
+- [ ] Convex hull collision shapes (or similar)
+- [ ] Particle system
 - [ ] Spot lights
+- [ ] Audio seperate players from resources

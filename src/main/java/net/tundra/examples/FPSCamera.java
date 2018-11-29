@@ -42,11 +42,12 @@ public class FPSCamera extends ShakableCamera {
     if (game.getInput().isKeyPressed(KEY_SPACE) && !jumping) {
       tracking.getBody().applyCentralImpulse(new javax.vecmath.Vector3f(0, 5f, 0));
       jumping = true;
-      game.after(
-          2000,
-          () -> {
-            jumping = false;
-          });
+      game.getCurrentState()
+          .after(
+              2000,
+              () -> {
+                jumping = false;
+              });
     }
 
     if (velocity.length() != 0) {

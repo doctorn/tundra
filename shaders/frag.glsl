@@ -168,7 +168,10 @@ void main() {
     colour = vec4(temp, 1.);
   } else colour = vec4(diff_col, 1.);
     
+  if (!materialed && !lighting && !texturing) {
+    colour.a = col.a;
+    return;
+  }
   float gamma = 2.2;
   colour = vec4(pow(colour.rgb, vec3(1. / gamma)), 1.);
-  if (!materialed && !lighting && !texturing) colour.a = col.a;
 }

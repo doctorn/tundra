@@ -63,7 +63,7 @@ public abstract class PhysicsObject extends GameObject implements Trackable {
 
   @Override
   public void die(Game game) {
-    game.getDynamicsWorld().removeRigidBody(body);
+    game.getCurrentState().getDynamicsWorld().removeRigidBody(body);
   }
 
   @Override

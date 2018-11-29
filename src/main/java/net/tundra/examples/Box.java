@@ -17,7 +17,8 @@ public class Box extends PhysicsObject {
         position,
         Model.CUBE /* TestGame.MONKEY */,
         new Quaternionf(),
-        new Vector3f(0.2f, 0.14f, 0.48f),
+        // new Vector3f(0.2f, 0.14f, 0.48f),
+        new Vector3f(0.2f, 0.2f, 0.2f),
         1f);
     // game.addLight(new TrackingLight(this, new Vector3f(0, 1, 1)));
     directional = true;
@@ -49,12 +50,12 @@ public class Box extends PhysicsObject {
     if (directional) {
       graphics.setColour(new Vector3f(0.2f, 0.2f, 0.2f));
       graphics.drawModel(
-          /* Model.CUBE */ TestGame.MONKEY,
+          /* Model.CUBE */ TestGameState.MONKEY,
           new Matrix4f().translate(getPosition()).scale(0.2f).rotate(getRotation()));
     } else {
       graphics.setColour(new Vector3f(0.8f, 0.8f, 0.8f));
       graphics.drawModel(
-          /* Model.CUBE */ TestGame.MONKEY,
+          /* Model.CUBE */ TestGameState.MONKEY,
           new Matrix4f().translate(getPosition()).scale(0.2f).rotate(getRotation()));
     }
     // game.setLighting(lighting);

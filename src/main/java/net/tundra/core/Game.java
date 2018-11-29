@@ -25,7 +25,7 @@ public abstract class Game {
   private boolean changingState = false;
   private float maskOpacity;
 
-  private int fps = 0, frameCount = 0, cumulativeDelta = 0;
+  private int fps = 0, frameCount = 0, cumulativeDelta = 0, delta;
 
   public Game(int width, int height, String title, boolean fullscreen) {
     this.width = width;
@@ -57,7 +57,7 @@ public abstract class Game {
   public void loop() throws TundraException {
     long timestamp = System.currentTimeMillis();
     do {
-      int delta = (int) (System.currentTimeMillis() - timestamp);
+      delta = (int) (System.currentTimeMillis() - timestamp);
       timestamp += delta;
       frameCount++;
       cumulativeDelta += delta;
@@ -143,6 +143,10 @@ public abstract class Game {
 
   public int getFPS() {
     return fps;
+  }
+
+  public int getTrueDelta() {
+    return delta;
   }
 
   public void setTimescale(float timescale) {

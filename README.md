@@ -36,7 +36,7 @@ lerp(1000, f -> {
 
 Here is an example of a mesh rendered in `tundra` with several materials and lights,
 
-!(Rendering example)[http://nathancorbyn.com/dredd.png]
+![Rendering example](http://nathancorbyn.com/dredd.png)
 
 The model used in this scene is available [here](https://sketchfab.com/models/74a05141476d4f6f8ebf83d9636923c5).
 

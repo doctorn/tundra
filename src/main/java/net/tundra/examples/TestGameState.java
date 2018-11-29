@@ -33,8 +33,8 @@ public class TestGameState extends GameState {
   public void init(Game game) throws TundraException {
     MONKEY = new Model("res/suzanne.obj");
     // DODGE = new Model("res/dodge-challenger_model.obj");
-    // DREDD = new Model("res/dredd.obj");
-    toggleDebug();
+    DREDD = new Model("res/dredd.obj");
+    // toggleDebug();
 
     player = new Box(game, new Vector3f(0, -3.5f, 0), new Vector3f(1f, 0f, 1f));
     player.getBody().setActivationState(CollisionObject.DISABLE_DEACTIVATION);
@@ -51,9 +51,10 @@ public class TestGameState extends GameState {
     trackingListener = new TrackingListener(1, camera, new Vector3f(0, 0, 0));
     addListener(trackingListener);
 
-    FixedLight main = new FixedLight(new Vector3f(-1f, -1f, -1f), new Vector3f(0.2f, 0.2f, 0.2f));
+    FixedLight main = new FixedLight(new Vector3f(-1f, -1f, -1f), new Vector3f(0.6f, 0.6f, 0.6f));
     addLight(new FixedLight(4, 0, 0, 0, 0, 1));
     addLight(new FixedLight(-4, 0, 0, 1, 0, 0));
+    addLight(new FixedLight(-2, 0, -4, 1, 1, 0));
     addLight(main);
     android = new Animation(new SpriteSheet("res/android.png", 24, 24), 0, 3, 5, 3, true, 10);
     android.start();
@@ -70,6 +71,7 @@ public class TestGameState extends GameState {
 
     addObject(new Floor());
 
+    /*
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         for (int k = 0; k < 8; k++)
@@ -77,6 +79,7 @@ public class TestGameState extends GameState {
               new Box(game, new Vector3f(5f + i * 0.41f, -4f + 0.41f + j * 0.4f, 5f + k * 0.4f)));
       }
     }
+    */
 
     // Interpolator lerping = lerp(10000, f -> camera.setDistance(f), camera.getDistance(), 50f);
     // every(1000, () -> toggleLighting());
@@ -142,7 +145,7 @@ public class TestGameState extends GameState {
             Model.PLANE, android.currentFrame(), transform, new Vector4f(1f, 1f, 1f, 1f));
     }
 
-    // graphics.drawModel(DREDD, new Matrix4f().translate(new Vector3f(-5f, 0, 5f)));
+    graphics.drawModel(DREDD, new Matrix4f().translate(new Vector3f(-5f, 0, 5f)));
     // graphics.setColour(new Vector4f(0f, 0f, 0f, 0.5f));
     // graphics.fillRect(0, 0, getWidth() / 2, getHeight() / 2);
 

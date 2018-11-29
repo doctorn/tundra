@@ -2,7 +2,7 @@
 
 #define MAX_LIGHTS 64
 #define DEFAULT_HIGHLIGHT 1.0
-#define AMBIENT 0.005
+#define AMBIENT 0.05
 
 in vec3 frag_normal;
 in vec3 frag_pos;
@@ -183,7 +183,4 @@ void main() {
     colour.a = opacity;
     return;
   }
-
-  float gamma = 2.2;
-  colour = vec4(pow(colour.rgb, vec3(1. / gamma)), 1.);
 }

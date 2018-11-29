@@ -2,11 +2,16 @@ package net.tundra.core;
 
 import com.bulletphysics.collision.broadphase.BroadphaseInterface;
 import com.bulletphysics.collision.broadphase.DbvtBroadphase;
+import com.bulletphysics.collision.broadphase.Dispatcher;
 import com.bulletphysics.collision.dispatch.CollisionConfiguration;
 import com.bulletphysics.collision.dispatch.CollisionDispatcher;
 import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
+import com.bulletphysics.collision.narrowphase.ManifoldPoint;
+import com.bulletphysics.collision.narrowphase.PersistentManifold;
 import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
 import com.bulletphysics.dynamics.DynamicsWorld;
+import com.bulletphysics.dynamics.InternalTickCallback;
+import com.bulletphysics.dynamics.RigidBody;
 import com.bulletphysics.dynamics.constraintsolver.ConstraintSolver;
 import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import java.util.ArrayList;
@@ -53,6 +58,34 @@ public abstract class GameState {
     CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
     ConstraintSolver solver = new SequentialImpulseConstraintSolver();
     dynamics = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
+    dynamics.setInternalTickCallback(
+        new InternalTickCallback() {
+          @Override
+          public void internalTick(DynamicsWorld dynamics, float delta) {
+            Dispatcher dispatcher = dynamics.getDispatcher();
+            int manifolds = dispatcher.getNumManifolds();
+            for (int i = 0; i < manifolds; i++) {
+              PersistentManifold manifold = dispatcher.getManifoldByIndexInternal(i);
+              RigidBody object1 = (RigidBody) manifold.getBody0();
+              RigidBody object2 = (RigidBody) manifold.getBody1();
+              PhysicsObject physicsObject1 = (PhysicsObject) object1.getUserPointer();
+              PhysicsObject physicsObject2 = (PhysicsObject) object2.getUserPointer();
+              boolean hit = false;
+              for (int j = 0; j < manifold.getNumContacts(); j++) {
+                ManifoldPoint contactPoint = manifold.getContactPoint(j);
+                if (contactPoint.getDistance() < 0.0f) {
+                  hit = true;
+                  break;
+                }
+              }
+              if (hit) {
+                physicsObject1.onCollision(physicsObject2);
+                physicsObject2.onCollision(physicsObject2);
+              }
+            }
+          }
+        },
+        null);
   }
 
   public abstract void init(Game game) throws TundraException;

@@ -37,6 +37,7 @@ public abstract class PhysicsObject extends GameObject implements Trackable {
         new RigidBodyConstructionInfo(mass, motionState, shape, inertia);
     configure(constructionInfo);
     body = new RigidBody(constructionInfo);
+    body.setUserPointer(this);
   }
 
   public void configure(RigidBodyConstructionInfo constructionInfo) {
@@ -60,6 +61,8 @@ public abstract class PhysicsObject extends GameObject implements Trackable {
     graphics.drawModelWireframe(
         model, new Matrix4f().translate(getPosition()).rotate(getRotation()).scale(scale));
   }
+
+  public void onCollision(PhysicsObject other) {}
 
   @Override
   public void die(Game game) {

@@ -60,4 +60,9 @@ public class Box extends PhysicsObject {
     }
     // game.setLighting(lighting);
   }
+
+  @Override
+  public void onCollision(PhysicsObject other) {
+    if (!directional && other instanceof Box && ((Box) other).directional) kill();
+  }
 }

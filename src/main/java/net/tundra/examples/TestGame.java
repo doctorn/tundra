@@ -5,7 +5,7 @@ import net.tundra.core.TundraException;
 
 public class TestGame extends Game {
   public TestGame() {
-    super(1920, 1080, "tundra", false);
+    super(1920, 1080, "tundra", true);
   }
 
   @Override

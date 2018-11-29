@@ -49,14 +49,14 @@ public class Graphics {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    VertexShader vertex = new VertexShader("shaders/vert.glsl");
-    FragmentShader fragment = new FragmentShader("shaders/frag.glsl");
+    VertexShader vertex = new VertexShader(getClass().getResourceAsStream("./vert.glsl"));
+    FragmentShader fragment = new FragmentShader(getClass().getResourceAsStream("./frag.glsl"));
     program = new Program(vertex, fragment);
     vertex.delete();
     fragment.delete();
 
-    vertex = new VertexShader("shaders/shadow_vert.glsl");
-    fragment = new FragmentShader("shaders/shadow_frag.glsl");
+    vertex = new VertexShader(getClass().getResourceAsStream("./shadow_vert.glsl"));
+    fragment = new FragmentShader(getClass().getResourceAsStream("./shadow_frag.glsl"));
     shadows = new Program(vertex, fragment);
     vertex.delete();
     fragment.delete();

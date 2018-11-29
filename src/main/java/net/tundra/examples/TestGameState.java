@@ -17,7 +17,6 @@ import net.tundra.core.scene.FixedLight;
 import net.tundra.core.scene.OrbitalCamera;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
-import org.joml.Vector4f;
 
 public class TestGameState extends GameState {
   private Animation android;
@@ -33,13 +32,13 @@ public class TestGameState extends GameState {
   public void init(Game game) throws TundraException {
     MONKEY = new Model("res/suzanne.obj");
     // DODGE = new Model("res/dodge-challenger_model.obj");
-    DREDD = new Model("res/dredd.obj");
+    DREDD = new Model("res/vader.obj");
     // toggleDebug();
 
     player = new Box(game, new Vector3f(0, -3.5f, 0), new Vector3f(1f, 0f, 1f));
     player.getBody().setActivationState(CollisionObject.DISABLE_DEACTIVATION);
-    addObject(player);
-    camera = new OrbitalCamera(player, 10f);
+    // addObject(player);
+    camera = new OrbitalCamera(new Vector3f(-5, -1.5f, 5), 10f);
     camera2 = new FPSCamera(player, new Vector3f(-0.06f, 0.06f, 0));
     addCamera(camera);
     addCamera(camera2);
@@ -132,7 +131,7 @@ public class TestGameState extends GameState {
 
   @Override
   public void render(Game game, Graphics graphics) throws TundraException {
-    for (int i = -5; i < 5; i++) {
+    /*for (int i = -5; i < 5; i++) {
       Vector3f position = new Vector3f(i, -3.5f, -2);
       Matrix4f transform =
           new Matrix4f()
@@ -143,16 +142,16 @@ public class TestGameState extends GameState {
       else
         graphics.drawModelFlash(
             Model.PLANE, android.currentFrame(), transform, new Vector4f(1f, 1f, 1f, 1f));
-    }
+    }*/
 
-    graphics.drawModel(DREDD, new Matrix4f().translate(new Vector3f(-5f, 0, 5f)));
+    graphics.drawModel(DREDD, new Matrix4f().translate(new Vector3f(-5f, -2f, 5f)));
     // graphics.setColour(new Vector4f(0f, 0f, 0f, 0.5f));
     // graphics.fillRect(0, 0, getWidth() / 2, getHeight() / 2);
 
     graphics.setColour(new Vector3f(1f, 1f, 1f));
 
-    graphics.drawString(game.getFPS() + " FPS", font, 10, 100);
-    graphics.drawString(getLights().size() + " LIGHTS", font, 10, 135);
+    // graphics.drawString(game.getFPS() + " FPS", font, 10, 100);
+    // graphics.drawString(getLights().size() + " LIGHTS", font, 10, 135);
   }
 
   public int getID() {

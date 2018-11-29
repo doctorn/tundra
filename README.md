@@ -34,7 +34,7 @@ lerp(1000, f -> {
 
 `tundra` is yet to support animation; however, it moves far passed `grassland` in terms of graphics capability. `tundra` supports the loading and rendering of `.obj` files along with `.mtl` files.
 
-Here is an example of a mesh rendered in `tundra` with several materials and lights,
+Here is an example of a mesh rendered in `tundra` with several materials and lights (including a shadow mapped global light source),
 
 ![Rendering example](http://nathancorbyn.com/dredd.png)
 

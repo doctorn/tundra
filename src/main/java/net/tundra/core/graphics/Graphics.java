@@ -351,15 +351,16 @@ public class Graphics {
     }
 
     public void execute(Matrix4f vpMatrix) throws TundraException {
+      Matrix4f mvpMatrix = new Matrix4f();
+      vpMatrix.mul(transform, mvpMatrix);
+      if (!mvpMatrix.testSphere(0, 0, 0, model.getBoundingRadius())) return;
+
       if (wireframe) {
         glPolygonMode(GL_FRONT, GL_LINE);
         glPolygonMode(GL_BACK, GL_LINE);
         glDisable(GL_CULL_FACE);
       }
 
-      Matrix4f mvpMatrix = new Matrix4f();
-      vpMatrix.mul(transform, mvpMatrix);
-      if (!mvpMatrix.testSphere(0, 0, 0, model.getBoundingRadius())) return;
       program.uniform("col", colour);
       program.uniform("mvp_matrix", mvpMatrix);
       program.uniform("model_matrix", transform);

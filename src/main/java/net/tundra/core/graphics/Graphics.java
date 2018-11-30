@@ -235,6 +235,7 @@ public class Graphics {
   }
 
   public void render() throws TundraException {
+    Matrix4f shadowMatrix = null;
     if (game.getCurrentState().shadowMapping()) {
       glUseProgram(shadows.getProgram());
       glBindFramebuffer(GL_FRAMEBUFFER, depthBuffer);
@@ -243,7 +244,11 @@ public class Graphics {
       glReadBuffer(GL_NONE);
       glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
       glClear(GL_DEPTH_BUFFER_BIT);
-      for (Draw draw : scene) draw.shadowMap();
+      shadowMatrix =
+          game.getCurrentState()
+              .getShadowCamera()
+              .getViewProjectionMatrix(SHADOW_WIDTH, SHADOW_HEIGHT);
+      for (Draw draw : scene) draw.shadowMap(shadowMatrix);
       glBindTexture(GL_TEXTURE_2D, 0);
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       glViewport(0, 0, game.getWidth(), game.getHeight());
@@ -254,11 +259,7 @@ public class Graphics {
     program.uniform("shadow_mapping", game.getCurrentState().shadowMapping());
     if (game.getCurrentState().shadowMapping()) {
       program.uniform("shadow_dir", game.getCurrentState().getShadowCamera().getLook().mul(-1));
-      program.uniform(
-          "shadow_vp_matrix",
-          game.getCurrentState()
-              .getShadowCamera()
-              .getViewProjectionMatrix(SHADOW_WIDTH, SHADOW_HEIGHT));
+      program.uniform("shadow_vp_matrix", shadowMatrix);
     }
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, depthMap);
@@ -318,8 +319,11 @@ public class Graphics {
       this.colour = colour;
     }
 
-    public void shadowMap() throws TundraException {
+    public void shadowMap(Matrix4f vpMatrix) throws TundraException {
       if (lighting) {
+        Matrix4f mvpMatrix = new Matrix4f();
+        vpMatrix.mul(transform, mvpMatrix);
+        if (!mvpMatrix.testSphere(0, 0, 0, model.getBoundingRadius())) return;
         if (model.solid()) glCullFace(GL_FRONT);
         if (texture != null) {
           shadows.uniform("texturing", true);
@@ -333,12 +337,7 @@ public class Graphics {
           glActiveTexture(GL_TEXTURE0);
           glBindTexture(GL_TEXTURE_2D, 0);
         }
-        shadows.uniform(
-            "mvp_matrix",
-            game.getCurrentState()
-                .getShadowCamera()
-                .getViewProjectionMatrix(SHADOW_WIDTH, SHADOW_HEIGHT)
-                .mul(transform));
+        shadows.uniform("mvp_matrix", mvpMatrix);
         glBindBuffer(GL_ARRAY_BUFFER, model.getVertices());
         shadows.attrib("vertex", 3);
         glBindBuffer(GL_ARRAY_BUFFER, model.getTextureCoords());
@@ -358,7 +357,8 @@ public class Graphics {
         glDisable(GL_CULL_FACE);
       }
 
-      Matrix4f mvpMatrix = vpMatrix.mul(transform);
+      Matrix4f mvpMatrix = new Matrix4f();
+      vpMatrix.mul(transform, mvpMatrix);
       if (!mvpMatrix.testSphere(0, 0, 0, model.getBoundingRadius())) return;
       program.uniform("col", colour);
       program.uniform("mvp_matrix", mvpMatrix);

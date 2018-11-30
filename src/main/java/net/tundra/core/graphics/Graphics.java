@@ -202,6 +202,56 @@ public class Graphics {
             colour));
   }
 
+  public void drawImage(Sprite sprite, int x, int y, int width, int height) throws TundraException {
+    external.add(
+        new Draw(
+            false,
+            false,
+            false,
+            1f,
+            Model.PLANE,
+            sprite,
+            new Matrix4f()
+                .translate(x, game.getHeight() - y, 0)
+                .scale(width / 2f, height / 2f, 1)
+                .translate(1, -1, 0),
+            colour));
+  }
+
+  public void drawImage(Sprite sprite, int x, int y, int width, int height, float opacity)
+      throws TundraException {
+    external.add(
+        new Draw(
+            false,
+            false,
+            false,
+            opacity,
+            Model.PLANE,
+            sprite,
+            new Matrix4f()
+                .translate(x, game.getHeight() - y, 0)
+                .scale(width / 2f, height / 2f, 1)
+                .translate(1, -1, 0),
+            colour));
+  }
+
+  public void drawImageFlash(Sprite sprite, int x, int y, int width, int height, Vector4f colour)
+      throws TundraException {
+    external.add(
+        new Draw(
+            false,
+            false,
+            true,
+            1f,
+            Model.PLANE,
+            sprite,
+            new Matrix4f()
+                .translate(x, game.getHeight() - y, 0)
+                .scale(width / 2f, height / 2f, 1)
+                .translate(1, -1, 0),
+            colour));
+  }
+
   public void drawRect(int x, int y, int width, int height) throws TundraException {
     external.add(
         new Draw(

@@ -100,6 +100,7 @@ void main() {
   vec3 diff_col;
   vec3 amb_col;
   float highlight;
+  float final_opacity = opacity;
 
   if (materialed) {
     if (frag_material != current_material)
@@ -124,8 +125,10 @@ void main() {
     else highlight = material.highlight;
   } else if (texturing) {
     vec4 temp = texture(tex, tex_start + frag_tex_coord * tex_size);
-    if (temp.a != 1.0)
+    if (temp.a != 1.0 && lighting)
       discard;
+    else if (temp.a != 1.0)
+      final_opacity = temp.a * opacity;
     amb_col = vec3(1.);
     diff_col = temp.rgb;
     spec_col = temp.rgb;
@@ -187,7 +190,7 @@ void main() {
     colour.a = col.a;
     return;
   } else if (!materialed && !lighting) {
-    colour.a = opacity;
+    colour.a = final_opacity;
     return;
   }
 }

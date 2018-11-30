@@ -122,4 +122,9 @@ public class Cube extends Model {
   public CollisionShape getCollisionShape() {
     return new BoxShape(new javax.vecmath.Vector3f(1f, 1f, 1f));
   }
+
+  @Override
+  public float getBoundingRadius() {
+    return (float) Math.sqrt(2f);
+  }
 }

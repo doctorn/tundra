@@ -37,7 +37,7 @@ public class TestGameState extends GameState {
 
     player = new Box(game, new Vector3f(0, -3.5f, 0), new Vector3f(1f, 0f, 1f));
     player.getBody().setActivationState(CollisionObject.DISABLE_DEACTIVATION);
-    // addObject(player);
+    addObject(player);
     camera = new OrbitalCamera(new Vector3f(-5, -1.5f, 5), 10f);
     camera2 = new FPSCamera(player, new Vector3f(-0.06f, 0.06f, 0));
     addCamera(camera);

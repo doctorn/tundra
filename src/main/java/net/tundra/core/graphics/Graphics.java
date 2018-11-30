@@ -268,7 +268,11 @@ public class Graphics {
     for (int i = 0; i < lights.size() && i < MAX_LIGHTS; i++)
       program.uniform("lights[" + i + "]", lights.get(i));
     program.uniform("light_count", lights.size());
-    for (Draw draw : scene) draw.execute(game.getCurrentState().getCamera());
+    for (Draw draw : scene)
+      draw.execute(
+          game.getCurrentState()
+              .getCamera()
+              .getViewProjectionMatrix(game.getWidth(), game.getHeight()));
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE0);
@@ -278,7 +282,8 @@ public class Graphics {
     glUseProgram(program.getProgram());
     program.uniform("cam_pos", INTERFACE_CAMERA.getPosition());
     program.uniform("shadow_mapping", false);
-    for (Draw draw : external) draw.execute(INTERFACE_CAMERA);
+    for (Draw draw : external)
+      draw.execute(INTERFACE_CAMERA.getViewProjectionMatrix(game.getWidth(), game.getHeight()));
     glEnable(GL_DEPTH_TEST);
     glUseProgram(0);
 
@@ -346,17 +351,17 @@ public class Graphics {
       }
     }
 
-    public void execute(Camera camera) throws TundraException {
+    public void execute(Matrix4f vpMatrix) throws TundraException {
       if (wireframe) {
         glPolygonMode(GL_FRONT, GL_LINE);
         glPolygonMode(GL_BACK, GL_LINE);
         glDisable(GL_CULL_FACE);
       }
 
+      Matrix4f mvpMatrix = vpMatrix.mul(transform);
+      if (!mvpMatrix.testSphere(0, 0, 0, model.getBoundingRadius())) return;
       program.uniform("col", colour);
-      program.uniform(
-          "mvp_matrix",
-          camera.getViewProjectionMatrix(game.getWidth(), game.getHeight()).mul(transform));
+      program.uniform("mvp_matrix", mvpMatrix);
       program.uniform("model_matrix", transform);
       Matrix4f transformInverse = new Matrix4f();
       transform.invert(transformInverse);

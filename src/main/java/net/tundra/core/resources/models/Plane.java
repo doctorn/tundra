@@ -69,4 +69,9 @@ public class Plane extends Model {
   public CollisionShape getCollisionShape() {
     return new StaticPlaneShape(new javax.vecmath.Vector3f(0, 0, 1f), 0);
   }
+
+  @Override
+  public float getBoundingRadius() {
+    return (float) Math.sqrt(2f);
+  }
 }

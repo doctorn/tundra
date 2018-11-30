@@ -35,6 +35,7 @@ public class Model {
   private boolean solid;
   private List<Material> materials = new ArrayList<>();
   private TriangleIndexVertexArray vertArray;
+  private float boundingRadius;
 
   public Model(
       FloatBuffer vertices,
@@ -130,12 +131,14 @@ public class Model {
                     Float.parseFloat(split[3])));
           } else if (split.length == 5) {
             float w = Float.parseFloat(split[4]);
-            vertices.add(
+            Vector3f vertex =
                 new Vector3f(
                         Float.parseFloat(split[1]),
                         Float.parseFloat(split[2]),
                         Float.parseFloat(split[3]))
-                    .mul(1f / w));
+                    .mul(1f / w);
+            vertices.add(vertex);
+            boundingRadius = Math.max(boundingRadius, vertex.length());
           } else
             throw new TundraException("Invalid vertex definition when reading '" + objFile + "'");
         } else if (line.startsWith("vt ")) {
@@ -314,6 +317,10 @@ public class Model {
 
   public boolean materialed() {
     return materials.size() != 0;
+  }
+
+  public float getBoundingRadius() {
+    return boundingRadius;
   }
 
   public List<Material> getMaterialDescriptors() {

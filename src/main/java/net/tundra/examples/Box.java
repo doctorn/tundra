@@ -1,5 +1,6 @@
 package net.tundra.examples;
 
+import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import net.tundra.core.Game;
 import net.tundra.core.TundraException;
 import net.tundra.core.graphics.Graphics;
@@ -23,8 +24,8 @@ public class Box extends PhysicsObject {
     // game.addLight(new TrackingLight(this, new Vector3f(0, 1, 1)));
     directional = true;
     getBody()
-        .applyCentralImpulse(
-            new javax.vecmath.Vector3f(30 * direction.x, 30 * direction.y, 30 * direction.z));
+        .setLinearVelocity(
+            new javax.vecmath.Vector3f(5 * direction.x, 5 * direction.y, 5 * direction.z));
     // game.after(5000, () -> kill());
   }
 
@@ -38,6 +39,12 @@ public class Box extends PhysicsObject {
 
     // game.addLight(new TrackingLight(this, new Vector3f(0, 1, 1)));
     // game.after(5000, () -> kill());
+  }
+
+  @Override
+  public void configure(RigidBodyConstructionInfo constructionInfo) {
+    super.configure(constructionInfo);
+    constructionInfo.mass = 1;
   }
 
   @Override

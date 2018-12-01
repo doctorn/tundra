@@ -16,4 +16,9 @@ public abstract class TrackingCamera extends Camera {
   public Vector3f getPosition() {
     return tracked.getPosition().add(offset);
   }
+
+  @Override
+  public Vector3f getTarget() {
+    return tracked.getPosition();
+  }
 }

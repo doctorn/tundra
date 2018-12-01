@@ -92,6 +92,11 @@ public class Cube extends Model {
 
   private static FloatBuffer textures(boolean mapped) {
     FloatBuffer textures = BufferUtils.createFloatBuffer(48);
+    textures.put(
+        new float[] {
+          0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1,
+          0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1,
+        });
     textures.flip();
     return textures;
   }

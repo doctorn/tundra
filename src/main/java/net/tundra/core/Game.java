@@ -3,6 +3,7 @@ package net.tundra.core;
 import static org.lwjgl.opengl.GL11.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import net.tundra.core.graphics.Graphics;
 import net.tundra.core.resources.sprites.Sprite;
@@ -94,6 +95,10 @@ public abstract class Game {
   }
 
   public void addState(GameState state) throws TundraException {
+    Iterator<GameState> iter = states.iterator();
+    while (iter.hasNext()) {
+      if (iter.next().getID() == state.getID()) iter.remove();
+    }
     state.initDefault(this);
     states.add(state);
   }

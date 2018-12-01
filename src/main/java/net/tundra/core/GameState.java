@@ -80,7 +80,7 @@ public abstract class GameState {
               }
               if (hit) {
                 physicsObject1.onCollision(physicsObject2);
-                physicsObject2.onCollision(physicsObject2);
+                physicsObject2.onCollision(physicsObject1);
               }
             }
           }

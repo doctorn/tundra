@@ -80,8 +80,8 @@ float shadow(vec3 normal, vec3 light_dir) {
   if (proj.z > 1.)
     return 0.;
   float current = proj.z;
-  float bias = 0.0003 * tan(acos(abs(dot(normal, shadow_dir))));
-  bias = clamp(bias, 0, 0.001);
+  float bias = 0.005 * tan(acos(abs(dot(normal, shadow_dir))));
+  bias = clamp(bias, 0, 0.01);
   float shadow = 0.0;
   vec2 size = 1.0 / textureSize(depth_map, 0);
   for(int i = -2; i < 2; i++) {

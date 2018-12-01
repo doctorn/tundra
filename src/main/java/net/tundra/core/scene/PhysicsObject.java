@@ -19,7 +19,12 @@ public abstract class PhysicsObject extends GameObject implements Trackable {
   private Vector3f scale;
 
   public PhysicsObject(
-      Vector3f position, Model model, Quaternionf rotation, Vector3f scale, float mass) {
+      Vector3f position,
+      Model model,
+      Quaternionf rotation,
+      Vector3f scale,
+      float mass,
+      boolean angular) {
     DefaultMotionState motionState =
         new DefaultMotionState(
             new Transform(
@@ -32,12 +37,17 @@ public abstract class PhysicsObject extends GameObject implements Trackable {
     CollisionShape shape = model.getCollisionShape();
     shape.setLocalScaling(new javax.vecmath.Vector3f(scale.x, scale.y, scale.z));
     javax.vecmath.Vector3f inertia = new javax.vecmath.Vector3f();
-    shape.calculateLocalInertia(mass, inertia);
+    if (angular) shape.calculateLocalInertia(mass, inertia);
     RigidBodyConstructionInfo constructionInfo =
         new RigidBodyConstructionInfo(mass, motionState, shape, inertia);
     configure(constructionInfo);
     body = new RigidBody(constructionInfo);
     body.setUserPointer(this);
+  }
+
+  public PhysicsObject(
+      Vector3f position, Model model, Quaternionf rotation, Vector3f scale, float mass) {
+    this(position, model, rotation, scale, mass, true);
   }
 
   public void configure(RigidBodyConstructionInfo constructionInfo) {

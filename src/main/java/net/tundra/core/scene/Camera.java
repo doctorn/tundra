@@ -33,11 +33,11 @@ public abstract class Camera extends SceneComponent implements Trackable {
     Vector3f target = getTarget();
     if (perspective) {
       return new Matrix4f()
-          .perspective((float) Math.toRadians(fov), (float) width / height, 0.01f, 500f)
+          .perspective((float) Math.toRadians(fov), (float) width / height, 0.01f, 250f)
           .lookAt(position, target, up);
     } else {
       return new Matrix4f()
-          .ortho(-(float) width / height, (float) width / height, -1, 1, 0.01f, 500f)
+          .ortho(-(float) width / height, (float) width / height, -1, 1, 0.01f, 250f)
           .lookAt(position, target, up);
     }
   }

@@ -134,8 +134,8 @@ public abstract class Game {
           return;
         }
       }
+      throw new RuntimeException(new TundraException("No state with id '" + id + "'"));
     }
-    throw new RuntimeException(new TundraException("No state with id '" + id + "'"));
   }
 
   public int getWidth() {

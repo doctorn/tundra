@@ -125,7 +125,7 @@ void main() {
     else highlight = material.highlight;
   } else if (texturing) {
     vec4 temp = texture(tex, tex_start + frag_tex_coord * tex_size);
-    if (temp.a != 1.0 && lighting)
+    if ((temp.a != 1.0 && lighting) || temp.a == 0)
       discard;
     else if (temp.a != 1.0)
       final_opacity = temp.a * opacity;

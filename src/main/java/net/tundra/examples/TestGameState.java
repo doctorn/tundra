@@ -32,7 +32,7 @@ public class TestGameState extends GameState {
   public void init(Game game) throws TundraException {
     MONKEY = new Model("res/suzanne.obj");
     // DODGE = new Model("res/dodge-challenger_model.obj");
-    DREDD = new Model("res/vader.obj");
+    DREDD = new Model("res/dredd.obj");
     // toggleDebug();
 
     player = new Box(game, new Vector3f(0, -3.5f, 0), new Vector3f(1f, 0f, 1f));

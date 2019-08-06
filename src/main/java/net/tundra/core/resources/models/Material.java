@@ -84,7 +84,7 @@ public class Material {
   }
 
   public boolean mappedSpecular() {
-    return mappedAmbient;
+    return mappedSpecular;
   }
 
   public void setAmbient(Vector3f ambient) {

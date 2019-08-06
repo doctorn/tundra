@@ -143,7 +143,7 @@ public class Model {
             throw new TundraException("Invalid vertex definition when reading '" + objFile + "'");
         } else if (line.startsWith("vt ")) {
           String[] split = line.split(" ");
-          if (split.length == 3) {
+          if (split.length >= 3) {
             textures.add(new Vector2f(Float.parseFloat(split[1]), Float.parseFloat(split[2])));
           } else
             throw new TundraException(
